@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--                                                                                                     -->
+<!-- Copyright (c) 2014, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
+<!--                                                                                                     -->
+
+<serviceAgreement name="DemoDeploy" xmlns="urn:arjuna:agility-portal:service-agreement-template:1.4">
+    <features>
+        <feature name="agility.demodeploy.flowname"        type="simple:string" shared="true"/>
+        <feature name="agility.demodeploy.pollinterval"    type="simple:string" shared="true"/>
+        <feature name="agility.demodeploy.minpollinterval" type="simple:string" shared="true"/>
+    </features>
+</serviceAgreement>

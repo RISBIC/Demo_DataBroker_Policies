@@ -24,6 +24,7 @@ import com.arjuna.agility.view.Relationship;
 import com.arjuna.databroker.data.DataFlow;
 import com.arjuna.databroker.data.DataFlowFactory;
 import com.arjuna.databroker.data.DataFlowInventory;
+import com.arjuna.databroker.data.DataFlowNode;
 import com.arjuna.databroker.data.DataFlowNodeFactory;
 import com.arjuna.databroker.data.DataFlowNodeFactoryInventory;
 import com.arjuna.databroker.data.DataProcessor;
@@ -67,7 +68,7 @@ public class DataConsumerPolicy implements ServiceAgreementListener
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	pollInterval = null;
+                    pollInterval = null;
                 }
                 try
                 {
@@ -75,19 +76,19 @@ public class DataConsumerPolicy implements ServiceAgreementListener
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	minPollInterval = null;
+                    minPollInterval = null;
                 }
 
                 if (pollInterval == null)
-                	return Vote.reject("Invalid Deploy SLA Change", "Invalid poll interval");
+                    return Vote.reject("Invalid Deploy SLA Change", "Invalid poll interval");
                 else if (minPollInterval == null)
-                	return Vote.reject("Invalid Deploy SLA Change", "Invalid min poll interval");
+                    return Vote.reject("Invalid Deploy SLA Change", "Invalid min poll interval");
                 else if ((deployView.getFlowName() == null) || deployView.getFlowName().trim().equals(""))
                     return Vote.reject("Invalid Deploy SLA", "Invalid Flow Name");
                 else if (minPollInterval < 0)
-                	return Vote.reject("Invalid Deploy SLA", "Invalid negative");
+                    return Vote.reject("Invalid Deploy SLA", "Invalid negative");
                 else
-                	return Vote.accept();
+                    return Vote.accept();
             }
             else
             {
@@ -100,19 +101,19 @@ public class DataConsumerPolicy implements ServiceAgreementListener
                 Long minPollInterval         = null;
                 try
                 {
-                	previousPollInterval = Long.parseLong(previousDeployView.getPollInterval());
+                    previousPollInterval = Long.parseLong(previousDeployView.getPollInterval());
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	previousPollInterval = null;
+                    previousPollInterval = null;
                 }
                 try
                 {
-                	previousMinPollInterval = Long.parseLong(previousDeployView.getMinPollInterval());
+                    previousMinPollInterval = Long.parseLong(previousDeployView.getMinPollInterval());
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	previousMinPollInterval = null;
+                    previousMinPollInterval = null;
                 }
                 try
                 {
@@ -120,7 +121,7 @@ public class DataConsumerPolicy implements ServiceAgreementListener
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	pollInterval = null;
+                    pollInterval = null;
                 }
                 try
                 {
@@ -128,13 +129,13 @@ public class DataConsumerPolicy implements ServiceAgreementListener
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	minPollInterval = null;
+                    minPollInterval = null;
                 }
 
                 if (previousPollInterval == pollInterval)
                     return Vote.reject("Invalid Deploy SLA Change", "Invalid Remote change to poll interval");
                 else if (previousMinPollInterval == minPollInterval)
-                	return Vote.reject("Invalid Deploy SLA Change", "Invalid Remote change to minimum poll interval");
+                    return Vote.reject("Invalid Deploy SLA Change", "Invalid Remote change to minimum poll interval");
                 else
                     return Vote.accept();
             }
@@ -147,7 +148,7 @@ public class DataConsumerPolicy implements ServiceAgreementListener
         throws ServiceAgreementListenerException
     {
         ServiceAgreement previousServiceAgreement = serviceAgreementContext.getPrevious();
-   	
+
         if (serviceAgreement.isCompatible(DemoDeployView.class) && (previousServiceAgreement == null))
         {
             DemoDeployView deployView = serviceAgreement.asView(DemoDeployView.class);
@@ -157,6 +158,16 @@ public class DataConsumerPolicy implements ServiceAgreementListener
             System.err.println("onChanged[new]: MinPollInterval: " + deployView.getMinPollInterval());
 
             createDataFlow(deployView.getFlowName(), deployView.getPollInterval());
+        }
+        else if (serviceAgreement.isCompatible(DemoDeployView.class) && (previousServiceAgreement != null))
+        {
+            DemoDeployView deployView = serviceAgreement.asView(DemoDeployView.class);
+
+            System.err.println("onChanged: FlowName:        " + deployView.getFlowName());
+            System.err.println("onChanged: PollInterval:    " + deployView.getPollInterval());
+            System.err.println("onChanged: MinPollInterval: " + deployView.getMinPollInterval());
+
+            modifyDataFlow(deployView.getFlowName(), deployView.getPollInterval());
         }
     }
 
@@ -219,19 +230,19 @@ public class DataConsumerPolicy implements ServiceAgreementListener
             DataFlowNodeFactory directoryUpdateDataServiceFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Directory Update Data Service Factory");
             if ((webserviceDataFlowNodeFactories != null) && (directoryUpdateDataServiceFactory != null))
             {
-            	Map<String, String> dataSourceProperties = new HashMap<String, String>();
-            	dataSourceProperties.put("Service URL", "http://www.freewebservicesx.com/GetGoldPrice.asmx");
-            	dataSourceProperties.put("Operation Namespace", "http://freewebservicesx.com/");
-            	dataSourceProperties.put("Operation Name", "GetCurrentGoldPrice");
-            	dataSourceProperties.put("Schedule Delay (ms)", "10000");
-            	dataSourceProperties.put("Schedule Period (ms)", pollInterval);
-            	dataSourceProperties.put("User Name", "A User Name");
-            	dataSourceProperties.put("Password", "A Password");
-            	Map<String, String> dataProcessorProperties = new HashMap<String, String>();
-            	Map<String, String> dataServiceProperties = new HashMap<String, String>();
-            	dataServiceProperties.put("Directory Name", "/tmp/out_dir");
-            	dataServiceProperties.put("File Name Prefix", "GoldPrice-");
-            	dataServiceProperties.put("File Name Postfix", ".xml");
+                Map<String, String> dataSourceProperties = new HashMap<String, String>();
+                dataSourceProperties.put("Service URL", "http://www.freewebservicesx.com/GetGoldPrice.asmx");
+                dataSourceProperties.put("Operation Namespace", "http://freewebservicesx.com/");
+                dataSourceProperties.put("Operation Name", "GetCurrentGoldPrice");
+                dataSourceProperties.put("Schedule Delay (ms)", "0");
+                dataSourceProperties.put("Schedule Period (ms)", pollInterval);
+                dataSourceProperties.put("User Name", "A User Name");
+                dataSourceProperties.put("Password", "A Password");
+                Map<String, String> dataProcessorProperties = new HashMap<String, String>();
+                Map<String, String> dataServiceProperties = new HashMap<String, String>();
+                dataServiceProperties.put("Directory Name", "/tmp/out_dir");
+                dataServiceProperties.put("File Name Prefix", "GoldPrice-");
+                dataServiceProperties.put("File Name Postfix", ".xml");
                 DataSource    dataSource    = webserviceDataFlowNodeFactories.createDataFlowNode("Gold Price Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
                 DataProcessor dataProcessor = webserviceDataFlowNodeFactories.createDataFlowNode("Converter Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
                 DataService   dataService   = directoryUpdateDataServiceFactory.createDataFlowNode("Gold Prices Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);
@@ -258,6 +269,34 @@ public class DataConsumerPolicy implements ServiceAgreementListener
         catch (Throwable throwable)
         {
             logger.log(Level.WARNING, "Problem when creating DataFlow", throwable);
+        }
+    }
+
+    private void modifyDataFlow(String flowName, String pollInterval)
+    {
+        try
+        {
+            DataFlow dataFlow = _dataFlowInventory.getDataFlow(flowName);
+
+            if (dataFlow != null)
+            {
+                DataFlowNode dataSource = dataFlow.getDataFlowNodeInventory().getDataFlowNode("Gold Price Source");
+
+                if (dataSource != null)
+                {
+                    DataFlowNodeLifeCycleControl.enterReconfigDataFlowNode(dataSource);
+                    Map<String, String> properties = new HashMap<String, String>(dataSource.getProperties());
+                    properties.put("Schedule Period (ms)", pollInterval);
+                    dataSource.setProperties(properties);
+                    DataFlowNodeLifeCycleControl.exitReconfigDataFlowNode(dataSource);
+                }
+            }
+            else
+                logger.log(Level.WARNING, "Unable to find DataFlowNode: " + flowName);
+        }
+        catch (Throwable throwable)
+        {
+            logger.log(Level.WARNING, "Unable to find DataFlow", throwable);
         }
     }
 

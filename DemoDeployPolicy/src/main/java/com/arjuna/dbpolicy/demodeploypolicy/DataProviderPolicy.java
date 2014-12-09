@@ -54,7 +54,7 @@ public class DataProviderPolicy implements ServiceAgreementListener
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	pollInterval = null;
+                    pollInterval = null;
                 }
                 try
                 {
@@ -62,23 +62,23 @@ public class DataProviderPolicy implements ServiceAgreementListener
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	minPollInterval = null;
+                    minPollInterval = null;
                 }
                 try
                 {
-                	previousMinPollInterval = Long.parseLong(previousDeployView.getMinPollInterval());
+                    previousMinPollInterval = Long.parseLong(previousDeployView.getMinPollInterval());
                 }
                 catch (NumberFormatException numberFormatException)
                 {
-                	previousMinPollInterval = null;
+                    previousMinPollInterval = null;
                 }
 
                 if (pollInterval == null)
-                	return Vote.reject("Invalid Deploy SLA Change", "Invalid poll interval");
+                    return Vote.reject("Invalid Deploy SLA Change", "Invalid poll interval");
                 else if (minPollInterval == null)
-                	return Vote.reject("Invalid Deploy SLA Change", "Invalid min poll interval");
+                    return Vote.reject("Invalid Deploy SLA Change", "Invalid min poll interval");
                 else if (pollInterval < minPollInterval)
-                	return Vote.reject("Invalid Deploy SLA Change", "Invalid Remote change to poll interval");
+                    return Vote.reject("Invalid Deploy SLA Change", "Invalid Remote change to poll interval");
                 else if (minPollInterval == previousMinPollInterval)
                     return Vote.reject("Invalid Deploy SLA Change", "Remote change to minimum poll interval");
                 else

@@ -6,8 +6,7 @@
 
 <serviceAgreement name="DemoDeploy" xmlns="urn:arjuna:agility-portal:service-agreement-template:1.4">
     <features>
-        <feature name="agility.demodeploy.flowname"        type="simple:string" shared="true"/>
-        <feature name="agility.demodeploy.pollinterval"    type="simple:string" shared="true"/>
-        <feature name="agility.demodeploy.minpollinterval" type="simple:string" shared="true"/>
+        <feature name="agility.demodeploy.status"   type="simple:string" shared="true"/>
+        <feature name="agility.demodeploy.flowname" type="simple:string" shared="true"/>
     </features>
 </serviceAgreement>

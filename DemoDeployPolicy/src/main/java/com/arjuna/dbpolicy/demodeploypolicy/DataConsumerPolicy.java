@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. 
+ * Copyright (c) 2014-2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. 
  */
 
 package com.arjuna.dbpolicy.demodeploypolicy;
@@ -7,24 +7,19 @@ package com.arjuna.dbpolicy.demodeploypolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-
-import org.w3c.dom.Document;
-
 import com.arjuna.agility.ServiceAgreement;
 import com.arjuna.agility.ServiceAgreementContext;
 import com.arjuna.agility.ServiceAgreementListener;
 import com.arjuna.agility.ServiceAgreementListenerException;
 import com.arjuna.agility.Vote;
-import com.arjuna.agility.view.Relationship;
 import com.arjuna.databroker.data.DataFlow;
 import com.arjuna.databroker.data.DataFlowFactory;
 import com.arjuna.databroker.data.DataFlowInventory;
-import com.arjuna.databroker.data.DataFlowNode;
 import com.arjuna.databroker.data.DataFlowNodeFactory;
 import com.arjuna.databroker.data.DataFlowNodeFactoryInventory;
 import com.arjuna.databroker.data.DataProcessor;
@@ -32,7 +27,8 @@ import com.arjuna.databroker.data.DataService;
 import com.arjuna.databroker.data.DataSource;
 import com.arjuna.databroker.data.connector.ObservableDataProvider;
 import com.arjuna.databroker.data.connector.ObserverDataConsumer;
-import com.arjuna.databroker.data.jee.DataFlowNodeLifeCycleControl;
+import com.arjuna.databroker.data.core.DataFlowNodeLifeCycleControl;
+import com.arjuna.databroker.data.core.DataFlowNodeLinkLifeCycleControl;
 import com.arjuna.dbpolicy.demodeploypolicy.view.DemoDeployView;
 
 @Stateless
@@ -43,102 +39,33 @@ public class DataConsumerPolicy implements ServiceAgreementListener
     public void onRegistered(String domain)
         throws ServiceAgreementListenerException
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.onRegistered");
     }
 
     public Vote onChangeProposed(ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
         throws ServiceAgreementListenerException
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.onChangeProposed");
+
         ServiceAgreement previousServiceAgreement = serviceAgreementContext.getPrevious();
 
-        if (serviceAgreement.isCompatible(Relationship.class))
-            return Vote.accept();
-        else if (serviceAgreement.isCompatible(DemoDeployView.class))
+        if (serviceAgreement.isCompatible(DemoDeployView.class))
         {
-            if (serviceAgreementContext.isLocal())
-                return Vote.accept();
-            else if (previousServiceAgreement == null)
+            if (previousServiceAgreement == null)
             {
                 DemoDeployView deployView = serviceAgreement.asView(DemoDeployView.class);
 
-                Long pollInterval    = null;
-                Long minPollInterval = null;
-                try
-                {
-                    pollInterval = Long.parseLong(deployView.getPollInterval());
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    pollInterval = null;
-                }
-                try
-                {
-                    minPollInterval = Long.parseLong(deployView.getMinPollInterval());
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    minPollInterval = null;
-                }
-
-                if (pollInterval == null)
-                    return Vote.reject("Invalid Deploy SLA Change", "Invalid poll interval");
-                else if (minPollInterval == null)
-                    return Vote.reject("Invalid Deploy SLA Change", "Invalid min poll interval");
-                else if ((deployView.getFlowName() == null) || deployView.getFlowName().trim().equals(""))
-                    return Vote.reject("Invalid Deploy SLA", "Invalid Flow Name");
-                else if (minPollInterval < 0)
-                    return Vote.reject("Invalid Deploy SLA", "Invalid negative");
-                else
-                    return Vote.accept();
+                return Vote.accept();
             }
-            else
+            else if (previousServiceAgreement.isCompatible(DemoDeployView.class))
             {
                 DemoDeployView deployView         = serviceAgreement.asView(DemoDeployView.class);
                 DemoDeployView previousDeployView = previousServiceAgreement.asView(DemoDeployView.class);
 
-                Long previousPollInterval    = null;
-                Long previousMinPollInterval = null;
-                Long pollInterval            = null;
-                Long minPollInterval         = null;
-                try
-                {
-                    previousPollInterval = Long.parseLong(previousDeployView.getPollInterval());
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    previousPollInterval = null;
-                }
-                try
-                {
-                    previousMinPollInterval = Long.parseLong(previousDeployView.getMinPollInterval());
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    previousMinPollInterval = null;
-                }
-                try
-                {
-                    pollInterval = Long.parseLong(deployView.getPollInterval());
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    pollInterval = null;
-                }
-                try
-                {
-                    minPollInterval = Long.parseLong(deployView.getMinPollInterval());
-                }
-                catch (NumberFormatException numberFormatException)
-                {
-                    minPollInterval = null;
-                }
-
-                if (previousPollInterval == pollInterval)
-                    return Vote.reject("Invalid Deploy SLA Change", "Invalid Remote change to poll interval");
-                else if (previousMinPollInterval == minPollInterval)
-                    return Vote.reject("Invalid Deploy SLA Change", "Invalid Remote change to minimum poll interval");
-                else
-                    return Vote.accept();
+                return Vote.accept();
             }
+            else
+                return Vote.reject();
         }
         else
             return Vote.ignore();
@@ -147,49 +74,62 @@ public class DataConsumerPolicy implements ServiceAgreementListener
     public void onChanged(ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
         throws ServiceAgreementListenerException
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.onChanged");
+
         ServiceAgreement previousServiceAgreement = serviceAgreementContext.getPrevious();
 
         if (serviceAgreement.isCompatible(DemoDeployView.class) && (previousServiceAgreement == null))
         {
             DemoDeployView deployView = serviceAgreement.asView(DemoDeployView.class);
 
-            System.err.println("onChanged[new]: FlowName:        " + deployView.getFlowName());
-            System.err.println("onChanged[new]: PollInterval:    " + deployView.getPollInterval());
-            System.err.println("onChanged[new]: MinPollInterval: " + deployView.getMinPollInterval());
+            System.err.println("onChanged[new]: Status:   " + deployView.getStatus());
+            System.err.println("onChanged[new]: FlowName: " + deployView.getFlowName());
 
-            createDataFlow(deployView.getFlowName(), deployView.getPollInterval());
+            if ("active".equals(deployView.getStatus()))
+            {
+                String flowName = UUID.randomUUID().toString();
+                createDataFlow(flowName, deployView);
+            }
         }
-        else if (serviceAgreement.isCompatible(DemoDeployView.class) && (previousServiceAgreement != null))
+        else if (serviceAgreement.isCompatible(DemoDeployView.class) && (previousServiceAgreement != null) && previousServiceAgreement.isCompatible(DemoDeployView.class))
         {
-            DemoDeployView deployView = serviceAgreement.asView(DemoDeployView.class);
+            DemoDeployView deployView         = serviceAgreement.asView(DemoDeployView.class);
+            DemoDeployView previousDeployView = previousServiceAgreement.asView(DemoDeployView.class);
 
-            System.err.println("onChanged: FlowName:        " + deployView.getFlowName());
-            System.err.println("onChanged: PollInterval:    " + deployView.getPollInterval());
-            System.err.println("onChanged: MinPollInterval: " + deployView.getMinPollInterval());
+            System.err.println("onChanged: Status:            " + deployView.getStatus());
+            System.err.println("onChanged: FlowName:          " + deployView.getFlowName());
+            System.err.println("onChanged: Previous Status:   " + previousDeployView.getStatus());
+            System.err.println("onChanged: Previous FlowName: " + previousDeployView.getFlowName());
 
-            modifyDataFlow(deployView.getFlowName(), deployView.getPollInterval());
+            if ((! "active".equals(previousDeployView.getStatus())) && "active".equals(deployView.getStatus()))
+            {
+                String flowName = UUID.randomUUID().toString();
+                createDataFlow(flowName, deployView);
+            }
+
+            modifyDataFlow(deployView.getFlowName(), deployView);
         }
     }
 
     public void onChangeRejected(ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
         throws ServiceAgreementListenerException
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.onChangeRejected");
+
         if (serviceAgreement.isCompatible(DemoDeployView.class))
         {
             DemoDeployView sampleDeployView = serviceAgreement.asView(DemoDeployView.class);
 
-            System.err.println("onChangeRejected: FlowName:        " + sampleDeployView.getFlowName());
-            System.err.println("onChangeRejected: PollInterval:    " + sampleDeployView.getPollInterval());
-            System.err.println("onChangeRejected: MinPollInterval: " + sampleDeployView.getMinPollInterval());
+            System.err.println("onChangeRejected: FlowName: " + sampleDeployView.getFlowName());
         }
     }
 
     public Vote onTerminateProposed(ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
         throws ServiceAgreementListenerException
     {
-        if (serviceAgreement.isCompatible(Relationship.class))
-            return Vote.accept();
-        else if (serviceAgreement.isCompatible(DemoDeployView.class))
+        logger.log(Level.FINE, "DataConsumerPolicy.onTerminateProposed");
+
+        if (serviceAgreement.isCompatible(DemoDeployView.class))
             return Vote.accept();
         else
             return Vote.ignore();
@@ -198,20 +138,25 @@ public class DataConsumerPolicy implements ServiceAgreementListener
     public void onTerminated(ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
         throws ServiceAgreementListenerException
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.onTerminated");
     }
 
     public void onTerminateRejected(ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
         throws ServiceAgreementListenerException
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.onTerminateRejected");
     }
 
     public void onUnregistered(String domain)
          throws ServiceAgreementListenerException
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.onUnregistered");
     }
 
-    private void createDataFlow(String flowName, String pollInterval)
+    private void createDataFlow(String flowName, DemoDeployView deployView)
     {
+        logger.log(Level.FINE, "DataConsumerPolicy.createDataFlow: " + flowName);
+
         try
         {
             Map<String, String> metaProperties = new HashMap<String, String>();
@@ -226,26 +171,23 @@ public class DataConsumerPolicy implements ServiceAgreementListener
             }
             _dataFlowInventory.addDataFlow(dataFlow);
 
-            DataFlowNodeFactory webserviceDataFlowNodeFactories   = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("WebService Data Flow Node Factories");
-            DataFlowNodeFactory directoryUpdateDataServiceFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Directory Update Data Service Factory");
-            if ((webserviceDataFlowNodeFactories != null) && (directoryUpdateDataServiceFactory != null))
+            DataFlowNodeFactory binaryServiceDataSourceFactory               = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("BinaryService Data Flow Node Factories");
+            DataFlowNodeFactory spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Spreadsheet Metadata Extractor Processor Factory");
+            DataFlowNodeFactory directoryUpdateDataServiceFactory            = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Directory Update Data Service Factory");
+
+            if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null) && (directoryUpdateDataServiceFactory != null))
             {
                 Map<String, String> dataSourceProperties = new HashMap<String, String>();
-                dataSourceProperties.put("Service URL", "http://www.freewebservicesx.com/GetGoldPrice.asmx");
-                dataSourceProperties.put("Operation Namespace", "http://freewebservicesx.com/");
-                dataSourceProperties.put("Operation Name", "GetCurrentGoldPrice");
-                dataSourceProperties.put("Schedule Delay (ms)", "0");
-                dataSourceProperties.put("Schedule Period (ms)", pollInterval);
-                dataSourceProperties.put("User Name", "A User Name");
-                dataSourceProperties.put("Password", "A Password");
+                dataSourceProperties.put("Endpoint Path", "demo");
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
+                dataProcessorProperties.put("Metadata Blog ID", "23533ebc-e311-4bd4-b773-5afc34028a07");
                 Map<String, String> dataServiceProperties = new HashMap<String, String>();
-                dataServiceProperties.put("Directory Name", "/tmp/out_dir");
-                dataServiceProperties.put("File Name Prefix", "GoldPrice-");
-                dataServiceProperties.put("File Name Postfix", ".xml");
-                DataSource    dataSource    = webserviceDataFlowNodeFactories.createDataFlowNode("Gold Price Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
-                DataProcessor dataProcessor = webserviceDataFlowNodeFactories.createDataFlowNode("Converter Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
-                DataService   dataService   = directoryUpdateDataServiceFactory.createDataFlowNode("Gold Prices Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);
+                dataServiceProperties.put("Directory Name", "/tmp");
+                dataServiceProperties.put("File Name Prefix", "Spreadsheet-");
+                dataServiceProperties.put("File Name Postfix", ".xslx");
+                DataSource    dataSource    = binaryServiceDataSourceFactory.createDataFlowNode("Endpoint Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
+                DataProcessor dataProcessor = spreadsheetMetadataExtractorProcessorFactory.createDataFlowNode("Metadata Extractor Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
+                DataService   dataService   = directoryUpdateDataServiceFactory.createDataFlowNode("Distribution Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);
 
                 if (dataFlow == null)
                     logger.log(Level.WARNING, "dataFlow is null");
@@ -256,12 +198,12 @@ public class DataConsumerPolicy implements ServiceAgreementListener
                 if (dataService == null)
                     logger.log(Level.WARNING, "dataService is null");
 
-                DataFlowNodeLifeCycleControl.processCreatedDataFlowNode(dataSource, dataFlow);
-                DataFlowNodeLifeCycleControl.processCreatedDataFlowNode(dataProcessor, dataFlow);
-                DataFlowNodeLifeCycleControl.processCreatedDataFlowNode(dataService, dataFlow);
+                _dataFlowNodeLifeCycleControl.completeCreationAndActivateDataFlowNode(UUID.randomUUID().toString(), dataSource, dataFlow);
+                _dataFlowNodeLifeCycleControl.completeCreationAndActivateDataFlowNode(UUID.randomUUID().toString(), dataProcessor, dataFlow);
+                _dataFlowNodeLifeCycleControl.completeCreationAndActivateDataFlowNode(UUID.randomUUID().toString(), dataService, dataFlow);
 
-                ((ObservableDataProvider<Document>) dataSource.getDataProvider(Document.class)).addDataConsumer((ObserverDataConsumer<Document>) dataProcessor.getDataConsumer(Document.class));
-                ((ObservableDataProvider<String>) dataProcessor.getDataProvider(String.class)).addDataConsumer((ObserverDataConsumer<String>) dataService.getDataConsumer(String.class));
+                ((ObservableDataProvider<byte[]>) dataSource.getDataProvider(byte[].class)).addDataConsumer((ObserverDataConsumer<byte[]>) dataProcessor.getDataConsumer(byte[].class));
+                ((ObservableDataProvider<byte[]>) dataProcessor.getDataProvider(byte[].class)).addDataConsumer((ObserverDataConsumer<byte[]>) dataService.getDataConsumer(byte[].class));
             }
             else
                 logger.log(Level.WARNING, "Unable to find both DataFlowNode Factory");
@@ -272,38 +214,19 @@ public class DataConsumerPolicy implements ServiceAgreementListener
         }
     }
 
-    private void modifyDataFlow(String flowName, String pollInterval)
+    private void modifyDataFlow(String flowName, DemoDeployView deployView)
     {
-        try
-        {
-            DataFlow dataFlow = _dataFlowInventory.getDataFlow(flowName);
-
-            if (dataFlow != null)
-            {
-                DataFlowNode dataSource = dataFlow.getDataFlowNodeInventory().getDataFlowNode("Gold Price Source");
-
-                if (dataSource != null)
-                {
-                    DataFlowNodeLifeCycleControl.enterReconfigDataFlowNode(dataSource);
-                    Map<String, String> properties = new HashMap<String, String>(dataSource.getProperties());
-                    properties.put("Schedule Period (ms)", pollInterval);
-                    dataSource.setProperties(properties);
-                    DataFlowNodeLifeCycleControl.exitReconfigDataFlowNode(dataSource);
-                }
-            }
-            else
-                logger.log(Level.WARNING, "Unable to find DataFlowNode: " + flowName);
-        }
-        catch (Throwable throwable)
-        {
-            logger.log(Level.WARNING, "Unable to find DataFlow", throwable);
-        }
+        logger.log(Level.FINE, "DataConsumerPolicy.modifyDataFlow: " + flowName);
     }
 
-    @EJB(lookup="java:global/databroker/control-core/DataFlowFactory")
+    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowFactory")
     private DataFlowFactory _dataFlowFactory;
-    @EJB(lookup="java:global/databroker/control-core/DataFlowInventory")
+    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowInventory")
     private DataFlowInventory _dataFlowInventory;
-    @EJB(lookup="java:global/databroker/control-core/DataFlowNodeFactoryInventory")
+    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowNodeFactoryInventory")
     private DataFlowNodeFactoryInventory _dataFlowNodeFactoryInventory;
+    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowNodeLifeCycleControl")
+    private DataFlowNodeLifeCycleControl _dataFlowNodeLifeCycleControl;
+    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowNodeLinkLifeCycleControl")
+    private DataFlowNodeLinkLifeCycleControl _dataFlowNodeLinkLifeCycleControl;
 }

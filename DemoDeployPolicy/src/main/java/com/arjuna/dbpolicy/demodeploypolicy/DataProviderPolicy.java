@@ -32,12 +32,10 @@ public class DataProviderPolicy implements ServiceAgreementListener
 
             if ("active".equals(deployView.getStatus()))
             {
-            	if (false)
-            	{
+            	if ((! "no".equals(deployView.getContainsSocialCareRecords())) && (! "no".equals(deployView.getContainsEducationalRecords())))
                     return Vote.reject("Invalid SLA", "Inappropriate Service Agreement values have an 'Active' status.");
-            	}
             	else
-            		return Vote.accept();
+            	    return Vote.accept();
             }
             else
                 return Vote.accept();

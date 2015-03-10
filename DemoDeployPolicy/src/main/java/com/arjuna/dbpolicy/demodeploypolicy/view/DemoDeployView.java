@@ -8,11 +8,23 @@ import com.arjuna.agility.annotation.Feature;
 
 public interface DemoDeployView
 {
-    @Feature(name = "agility.demodeploy.status")
+    @Feature(name = "demo.owner")
+    public String getOwner();
+    public void setOwner(String owner);
+
+    @Feature(name = "demo.status")
     public String getStatus();
     public void setStatus(String status);
 
-    @Feature(name = "agility.demodeploy.flowname")
+    @Feature(name = "demo.containsSocialCareRecords")
+    public String getContainsSocialCareRecords();
+    public void setContainsSocialCareRecords(String containsSocialCareRecords);
+
+    @Feature(name = "demo.containsEducationalRecords")
+    public String getContainsEducationalRecords();
+    public void setContainsEducationalRecords(String containsEducationalRecords);
+
+    @Feature(name = "demo.flowName")
     public String getFlowName();
     public void setFlowName(String flowName);
 }

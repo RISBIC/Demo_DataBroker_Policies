@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--                                                                                                     -->
-<!-- Copyright (c) 2014, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
+<!-- Copyright (c) 2014-2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
 <!--                                                                                                     -->
 
 <serviceAgreement name="DemoDeploy" xmlns="urn:arjuna:agility-portal:service-agreement-template:1.4">
     <features>
-        <feature name="agility.demodeploy.status"   type="simple:string" shared="true"/>
-        <feature name="agility.demodeploy.flowname" type="simple:string" shared="true"/>
+        <feature name="demo.owner"                      type="simple:string" shared="true"/>
+        <feature name="demo.status"                     type="simple:string" shared="true"/>
+        <feature name="demo.containsSocialCareRecords"  type="simple:string" shared="true"/>
+        <feature name="demo.containsEducationalRecords" type="simple:string" shared="true"/>
+        <feature name="demo.flowName"                   type="simple:string" shared="true"/>
     </features>
 </serviceAgreement>

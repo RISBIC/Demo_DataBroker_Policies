@@ -96,10 +96,12 @@ public class DataConsumerPolicy implements ServiceAgreementListener
             DemoDeployView deployView         = serviceAgreement.asView(DemoDeployView.class);
             DemoDeployView previousDeployView = previousServiceAgreement.asView(DemoDeployView.class);
 
-            System.err.println("onChanged: Status:            " + deployView.getStatus());
-            System.err.println("onChanged: FlowName:          " + deployView.getFlowName());
-            System.err.println("onChanged: Previous Status:   " + previousDeployView.getStatus());
-            System.err.println("onChanged: Previous FlowName: " + previousDeployView.getFlowName());
+            System.err.println("onChanged: Status:                     " + deployView.getStatus());
+            System.err.println("onChanged: FlowName:                   " + deployView.getFlowName());
+            System.err.println("onChanged: ContainsSocialCareRecords:  " + deployView.getContainsSocialCareRecords());
+            System.err.println("onChanged: ContainsEducationalRecords: " + deployView.getContainsEducationalRecords());
+            System.err.println("onChanged: Previous Status:            " + previousDeployView.getStatus());
+            System.err.println("onChanged: Previous FlowName:          " + previousDeployView.getFlowName());
 
             if ((! "active".equals(previousDeployView.getStatus())) && "active".equals(deployView.getStatus()))
             {

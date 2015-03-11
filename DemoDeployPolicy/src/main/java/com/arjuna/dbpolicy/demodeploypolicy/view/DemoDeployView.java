@@ -24,7 +24,7 @@ public interface DemoDeployView
     public String getContainsEducationalRecords();
     public void setContainsEducationalRecords(String containsEducationalRecords);
 
-    @Feature(name = "demo.flowName")
+    @Feature(name = "demo.flowName", optional=true)
     public String getFlowName();
     public void setFlowName(String flowName);
 }

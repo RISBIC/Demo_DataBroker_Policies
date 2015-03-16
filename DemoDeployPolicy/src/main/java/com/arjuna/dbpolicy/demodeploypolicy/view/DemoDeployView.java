@@ -16,6 +16,10 @@ public interface DemoDeployView
     public String getStatus();
     public void setStatus(String status);
 
+    @Feature(name = "demo.endpoint")
+    public String getEndpoint();
+    public void setEndpoint(String endpoint);
+
     @Feature(name = "demo.containsSocialCareRecords")
     public String getContainsSocialCareRecords();
     public void setContainsSocialCareRecords(String containsSocialCareRecords);

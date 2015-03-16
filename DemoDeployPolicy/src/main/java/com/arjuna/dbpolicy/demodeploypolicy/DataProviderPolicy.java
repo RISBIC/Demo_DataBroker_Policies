@@ -24,8 +24,6 @@ public class DataProviderPolicy implements ServiceAgreementListener
     public Vote onChangeProposed(ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
          throws ServiceAgreementListenerException
     {
-        ServiceAgreement previousServiceAgreement = serviceAgreementContext.getPrevious();
-
         if (serviceAgreement.isCompatible(DemoDeployView.class))
         {
             DemoDeployView deployView = serviceAgreement.asView(DemoDeployView.class);

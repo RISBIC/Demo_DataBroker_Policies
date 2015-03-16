@@ -11,5 +11,6 @@
         <feature name="demo.containsSocialCareRecords"  type="simple:string" shared="true"/>
         <feature name="demo.containsEducationalRecords" type="simple:string" shared="true"/>
         <feature name="demo.flowName"                   type="simple:string" shared="true"/>
+        <feature name="demo.flowName"                   type="simple:string" shared="true"/>
     </features>
 </serviceAgreement>

@@ -52,18 +52,9 @@ public class DataConsumerPolicy implements ServiceAgreementListener
         if (serviceAgreement.isCompatible(DemoDeployView.class))
         {
             if (previousServiceAgreement == null)
-            {
-                DemoDeployView deployView = serviceAgreement.asView(DemoDeployView.class);
-
                 return Vote.accept();
-            }
             else if (previousServiceAgreement.isCompatible(DemoDeployView.class))
-            {
-                DemoDeployView deployView         = serviceAgreement.asView(DemoDeployView.class);
-                DemoDeployView previousDeployView = previousServiceAgreement.asView(DemoDeployView.class);
-
                 return Vote.accept();
-            }
             else
                 return Vote.reject();
         }
@@ -88,7 +79,15 @@ public class DataConsumerPolicy implements ServiceAgreementListener
             if ("active".equals(deployView.getStatus()))
             {
                 String flowName = UUID.randomUUID().toString();
-                createDataFlow(flowName, deployView);
+                String endpoint = createDataFlow(flowName, deployView);
+
+                if (endpoint != null)
+                {
+                    deployView.setFlowName(flowName);
+                    deployView.setEndpoint(endpoint);
+
+                    serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
+                }
             }
         }
         else if (serviceAgreement.isCompatible(DemoDeployView.class) && (previousServiceAgreement != null) && previousServiceAgreement.isCompatible(DemoDeployView.class))
@@ -106,7 +105,15 @@ public class DataConsumerPolicy implements ServiceAgreementListener
             if ((! "active".equals(previousDeployView.getStatus())) && "active".equals(deployView.getStatus()))
             {
                 String flowName = UUID.randomUUID().toString();
-                createDataFlow(flowName, deployView);
+                String endpoint = createDataFlow(flowName, deployView);
+
+                if (endpoint != null)
+                {
+                    deployView.setFlowName(flowName);
+                    deployView.setEndpoint(endpoint);
+
+                    serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
+                }
             }
 
             modifyDataFlow(deployView.getFlowName(), deployView);
@@ -155,7 +162,7 @@ public class DataConsumerPolicy implements ServiceAgreementListener
         logger.log(Level.FINE, "DataConsumerPolicy.onUnregistered");
     }
 
-    private void createDataFlow(String flowName, DemoDeployView deployView)
+    private String createDataFlow(String flowName, DemoDeployView deployView)
     {
         logger.log(Level.FINE, "DataConsumerPolicy.createDataFlow: " + flowName);
 
@@ -179,8 +186,9 @@ public class DataConsumerPolicy implements ServiceAgreementListener
 
             if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null) && (directoryUpdateDataServiceFactory != null))
             {
+                String endpointId = UUID.randomUUID().toString();
                 Map<String, String> dataSourceProperties = new HashMap<String, String>();
-                dataSourceProperties.put("Endpoint Path", "demo");
+                dataSourceProperties.put("Endpoint Path", endpointId);
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
                 dataProcessorProperties.put("Metadata Blog ID", "23533ebc-e311-4bd4-b773-5afc34028a07");
                 Map<String, String> dataServiceProperties = new HashMap<String, String>();
@@ -206,6 +214,9 @@ public class DataConsumerPolicy implements ServiceAgreementListener
 
                 ((ObservableDataProvider<byte[]>) dataSource.getDataProvider(byte[].class)).addDataConsumer((ObserverDataConsumer<byte[]>) dataProcessor.getDataConsumer(byte[].class));
                 ((ObservableDataProvider<byte[]>) dataProcessor.getDataProvider(byte[].class)).addDataConsumer((ObserverDataConsumer<byte[]>) dataService.getDataConsumer(byte[].class));
+
+                String hostname = "localhost";
+                return "http://" + hostname + "/binaryservice/servlet/endpoints/" + endpointId;
             }
             else
                 logger.log(Level.WARNING, "Unable to find both DataFlowNode Factory");
@@ -214,6 +225,8 @@ public class DataConsumerPolicy implements ServiceAgreementListener
         {
             logger.log(Level.WARNING, "Problem when creating DataFlow", throwable);
         }
+        
+        return null;
     }
 
     private void modifyDataFlow(String flowName, DemoDeployView deployView)

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--                                                                                                     -->
+<!-- Copyright (c) 2014-2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
+<!--                                                                                                     -->
+
+<serviceAgreement name="DemoDeploy" xmlns="urn:arjuna:agility-portal:service-agreement-template:1.4">
+    <features>
+        <feature name="sectiona.programinitiative"     type="simple:string" shared="true"/>
+        <feature name="sectiona.informationassetowner" type="simple:string" shared="true"/>
+        <feature name="sectiona.projectlead"           type="simple:string" shared="true"/>
+
+        <feature name="sectionb.nameaddr"                       type="simple:string" shared="true"/>
+        <feature name="sectionb.birthdate"                      type="simple:string" shared="true"/>
+        <feature name="sectionb.nis"                            type="simple:string" shared="true"/>
+        <feature name="sectionb.bankdetails"                    type="simple:string" shared="true"/>
+        <feature name="sectionb.healthrecords"                  type="simple:string" shared="true"/>
+        <feature name="sectionb.socialcarerecords"              type="simple:string" shared="true"/>
+        <feature name="sectionb.eductionalrecords"              type="simple:string" shared="true"/>
+        <feature name="sectionb.benifitsandcounciltaxrecords"   type="simple:string" shared="true"/>
+        <feature name="sectionb.cctvotherfootage"               type="simple:string" shared="true"/>
+        <feature name="sectionb.internallyconfidentialmaterial" type="simple:string" shared="true"/>
+        <feature name="sectionb.contracts"                      type="simple:string" shared="true"/>
+
+        <feature name="sectionc.changedatahandling"           type="simple:string" shared="true"/>
+        <feature name="sectionc.changepersonalrecording"      type="simple:string" shared="true"/>
+        <feature name="sectionc.increaseclassificationrating" type="simple:string" shared="true"/>
+        <feature name="sectionc.accessadditionalstaff"        type="simple:string" shared="true"/>
+        <feature name="sectionc.requiredforpublication"       type="simple:string" shared="true"/>
+
+        <feature name="sectiond.aggregateddata"           type="simple:string" shared="true"/>
+        <feature name="sectiond.brokendownbyward"         type="simple:string" shared="true"/>
+        <feature name="sectiond.morethan20records"        type="simple:string" shared="true"/>
+        <feature name="sectiond.couldidentifyindividuals" type="simple:string" shared="true"/>
+        <feature name="sectiond.informationunderlicense"  type="simple:string" shared="true"/>
+
+        <feature name="change.details"         type="simple:string" shared="true"/>
+        <feature name="change.completeiondata" type="simple:string" shared="true"/>
+        <feature name="change.assetowner"      type="simple:string" shared="true"/>
+        <feature name="gateway.state"          type="simple:string" shared="true"/>
+        <feature name="gateway.endpoint"       type="simple:string" shared="true"/>
+    </features>
+</serviceAgreement>

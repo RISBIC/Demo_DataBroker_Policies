@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--                                                                                                     -->
+<!--                                                                                                          -->
 <!-- Copyright (c) 2014-2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
-<!--                                                                                                     -->
+<!--                                                                                                          -->
 
-<serviceAgreement name="DemoDeploy" xmlns="urn:arjuna:agility-portal:service-agreement-template:1.4">
+<serviceAgreement name="PrivacyImpactAssessment" xmlns="urn:arjuna:agility-portal:service-agreement-template:1.4">
     <features>
         <feature name="sectiona.programinitiative"     type="simple:string" shared="true"/>
         <feature name="sectiona.informationassetowner" type="simple:string" shared="true"/>
@@ -34,10 +34,12 @@
         <feature name="sectiond.couldidentifyindividuals" type="simple:string" shared="true"/>
         <feature name="sectiond.informationunderlicense"  type="simple:string" shared="true"/>
 
-        <feature name="change.details"         type="simple:string" shared="true"/>
-        <feature name="change.completeiondata" type="simple:string" shared="true"/>
-        <feature name="change.assetowner"      type="simple:string" shared="true"/>
-        <feature name="gateway.state"          type="simple:string" shared="true"/>
-        <feature name="gateway.endpoint"       type="simple:string" shared="true"/>
+        <feature name="change.details"    type="simple:string" shared="true"/>
+        <feature name="change.date"       type="simple:string" shared="true"/>
+        <feature name="change.assetowner" type="simple:string" shared="true"/>
+        <feature name="gateway.state"     type="simple:string" shared="true"/>
+        <feature name="gateway.endpoint"  type="simple:string" shared="true"/>
+
+        <feature name="databroker.flowname" type="simple:string" shared="false" optional="true"/>
     </features>
 </serviceAgreement>

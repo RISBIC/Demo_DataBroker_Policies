@@ -18,15 +18,11 @@ import com.arjuna.agility.ServiceAgreementListener;
 import com.arjuna.agility.ServiceAgreementListenerException;
 import com.arjuna.agility.Vote;
 import com.arjuna.databroker.data.DataFlow;
-import com.arjuna.databroker.data.DataFlowFactory;
-import com.arjuna.databroker.data.DataFlowInventory;
 import com.arjuna.databroker.data.DataFlowNodeFactory;
-import com.arjuna.databroker.data.DataFlowNodeFactoryInventory;
 import com.arjuna.databroker.data.DataProcessor;
 import com.arjuna.databroker.data.DataService;
 import com.arjuna.databroker.data.DataSource;
-import com.arjuna.databroker.data.connector.ObservableDataProvider;
-import com.arjuna.databroker.data.connector.ObserverDataConsumer;
+import com.arjuna.databroker.data.core.DataFlowLifeCycleControl;
 import com.arjuna.databroker.data.core.DataFlowNodeLifeCycleControl;
 import com.arjuna.databroker.data.core.DataFlowNodeLinkLifeCycleControl;
 import com.arjuna.dbpolicy.demodeploypolicy.view.PrivacyImpactAssessmentView;
@@ -183,14 +179,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
             Map<String, String> properties     = new HashMap<String, String>();
             metaProperties.put("Type", "Standard");
 
-            DataFlow dataFlow = _dataFlowFactory.createDataFlow(flowName, metaProperties, properties);
-            for (DataFlowNodeFactory dataFlowNodeFactory: _dataFlowNodeFactoryInventory.getDataFlowNodeFactorys())
-            {
-                logger.log(Level.FINE, "createDataFlow - dataFlowNodeFactory: " + dataFlowNodeFactory.getName());
-                dataFlow.getDataFlowNodeFactoryInventory().addDataFlowNodeFactory(dataFlowNodeFactory);
-            }
-            _dataFlowInventory.addDataFlow(dataFlow);
-
+            DataFlow            dataFlow                                     = _dataFlowLifeCycleControl.createDataFlow(flowName, metaProperties, properties);
             DataFlowNodeFactory binaryServiceDataSourceFactory               = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("BinaryService Data Flow Node Factories");
             DataFlowNodeFactory spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Spreadsheet Metadata Extractor Processor Factory");
             DataFlowNodeFactory directoryUpdateDataServiceFactory            = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Directory Update Data Service Factory");
@@ -201,7 +190,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 Map<String, String> dataSourceProperties = new HashMap<String, String>();
                 dataSourceProperties.put("Endpoint Path", endpointId);
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
-                dataProcessorProperties.put("Metadata Blog ID", "23533ebc-e311-4bd4-b773-5afc34028a07");
+                dataProcessorProperties.put("Metadata Blog ID", UUID.randomUUID().toString());
                 Map<String, String> dataServiceProperties = new HashMap<String, String>();
                 dataServiceProperties.put("Directory Name", "/tmp");
                 dataServiceProperties.put("File Name Prefix", "Spreadsheet-");
@@ -223,9 +212,10 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 _dataFlowNodeLifeCycleControl.completeCreationAndActivateDataFlowNode(UUID.randomUUID().toString(), dataProcessor, dataFlow);
                 _dataFlowNodeLifeCycleControl.completeCreationAndActivateDataFlowNode(UUID.randomUUID().toString(), dataService, dataFlow);
 
-                ((ObservableDataProvider<byte[]>) dataSource.getDataProvider(byte[].class)).addDataConsumer((ObserverDataConsumer<byte[]>) dataProcessor.getDataConsumer(byte[].class));
-                ((ObservableDataProvider<byte[]>) dataProcessor.getDataProvider(byte[].class)).addDataConsumer((ObserverDataConsumer<byte[]>) dataService.getDataConsumer(byte[].class));
+                _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataSource, dataProcessor, dataFlow);
+                _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataProcessor, dataService, dataFlow);
 
+//                String hostname = "publisherportal-arjunatech.rhcloud.com";
                 String hostname = System.getProperty("jboss.bind.address");
 
                 return "http://" + hostname + "/binaryservice/ws/endpoints/" + endpointId;
@@ -241,12 +231,8 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
         return null;
     }
 
-    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowFactory")
-    private DataFlowFactory _dataFlowFactory;
-    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowInventory")
-    private DataFlowInventory _dataFlowInventory;
-    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowNodeFactoryInventory")
-    private DataFlowNodeFactoryInventory _dataFlowNodeFactoryInventory;
+    @EJB(lookup="java:global/databroker/data-core-jee/DataFlowLifeCycleControl")
+    private DataFlowLifeCycleControl _dataFlowLifeCycleControl;
     @EJB(lookup="java:global/databroker/data-core-jee/DataFlowNodeLifeCycleControl")
     private DataFlowNodeLifeCycleControl _dataFlowNodeLifeCycleControl;
     @EJB(lookup="java:global/databroker/data-core-jee/DataFlowNodeLinkLifeCycleControl")

@@ -195,9 +195,9 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 dataServiceProperties.put("Directory Name", "/tmp");
                 dataServiceProperties.put("File Name Prefix", "Spreadsheet-");
                 dataServiceProperties.put("File Name Postfix", ".xslx");
-                DataSource    dataSource    = binaryServiceDataSourceFactory.createDataFlowNode("Endpoint Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
-                DataProcessor dataProcessor = spreadsheetMetadataExtractorProcessorFactory.createDataFlowNode("Metadata Extractor Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
-                DataService   dataService   = directoryUpdateDataServiceFactory.createDataFlowNode("Distribution Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);
+                DataSource    dataSource    = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, binaryServiceDataSourceFactory, "Endpoint Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
+                DataProcessor dataProcessor = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, spreadsheetMetadataExtractorProcessorFactory, "Metadata Extractor Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
+                DataService   dataService   = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, directoryUpdateDataServiceFactory, "Distribution Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);
 
                 if (dataFlow == null)
                     logger.log(Level.WARNING, "dataFlow is null");

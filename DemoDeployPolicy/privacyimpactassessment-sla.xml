@@ -37,8 +37,8 @@
         <feature name="change.details"    type="simple:string" shared="true"/>
         <feature name="change.date"       type="simple:string" shared="true"/>
         <feature name="change.assetowner" type="simple:string" shared="true"/>
-        <feature name="gateway.state"     type="simple:string" shared="true"/>
-        <feature name="gateway.endpoint"  type="simple:string" shared="true"/>
+        <feature name="gateway.state"     type="simple:string" shared="true" optional="true"/>
+        <feature name="gateway.endpoint"  type="simple:string" shared="true" optional="true"/>
 
         <feature name="databroker.flowname" type="simple:string" shared="false" optional="true"/>
     </features>

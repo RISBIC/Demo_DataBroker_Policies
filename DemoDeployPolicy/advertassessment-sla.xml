@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--                                                                                                          -->
+<!-- Copyright (c) 2014-2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
+<!--                                                                                                          -->
+
+<serviceAgreement name="AdvertAssessment" xmlns="urn:arjuna:agility-portal:service-agreement-template:1.4">
+    <features>
+        <feature name="advert.name"  type="simple:string" shared="true"/>
+
+        <feature name="gateway.state"    type="simple:string" shared="true" optional="true"/>
+        <feature name="gateway.endpoint" type="simple:string" shared="true" optional="true"/>
+
+        <feature name="advert.flowname" type="simple:string" shared="false" optional="true"/>
+    </features>
+</serviceAgreement>

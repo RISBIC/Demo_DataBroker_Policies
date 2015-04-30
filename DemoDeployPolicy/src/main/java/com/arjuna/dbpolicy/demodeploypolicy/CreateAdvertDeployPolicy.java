@@ -64,19 +64,14 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
     {
         logger.log(Level.FINE, "CreateAdvertDeployPolicy.onChanged");
 
-        ServiceAgreement previousServiceAgreement = serviceAgreementContext.getPrevious();
-
-        if (serviceAgreement.isCompatible(AdvertAgreementView.class) && (previousServiceAgreement == null))
+        if (serviceAgreement.isCompatible(AdvertAgreementView.class))
         {
             AdvertAgreementView advertAgreementView = serviceAgreement.asView(AdvertAgreementView.class);
 
-            logger.log(Level.FINE, "  onChanged[new]: State:    " + advertAgreementView.getState());
             logger.log(Level.FINE, "  onChanged[new]: FlowName: " + advertAgreementView.getFlowName());
             logger.log(Level.FINE, "  onChanged[new]: Endpoint: " + advertAgreementView.getEndpoint());
 
-            String state = advertAgreementView.getState();
-
-            if ((state != null) && "active".equals(state) && (advertAgreementView.getFlowName() == null))
+            if (advertAgreementView.getFlowName() == null)
             {
                 logger.log(Level.FINE, "CreateAdvertDeployPolicy.onChanged: now active");
 
@@ -89,36 +84,6 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
 
                     advertAgreementView.setEndpoint(endpoint);
                     advertAgreementView.setFlowName(flowName);
-
-                    serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
-                }
-            }
-        }
-        else if (serviceAgreement.isCompatible(AdvertAgreementView.class) && (previousServiceAgreement != null) && previousServiceAgreement.isCompatible(AdvertAgreementView.class))
-        {
-            AdvertAgreementView advertAgreementView         = serviceAgreement.asView(AdvertAgreementView.class);
-            AdvertAgreementView previousAdvertAgreementView = previousServiceAgreement.asView(AdvertAgreementView.class);
-
-            logger.log(Level.FINE, "  onChanged: State:    " + advertAgreementView.getState());
-            logger.log(Level.FINE, "  onChanged: FlowName: " + advertAgreementView.getFlowName());
-            logger.log(Level.FINE, "  onChanged: Endpoint: " + advertAgreementView.getEndpoint());
-
-            String previousState = previousAdvertAgreementView.getState();
-            String state         = advertAgreementView.getState();
-
-            if (((previousState == null) || (! "active".equals(previousState))) && (state != null) && "active".equals(state) && (advertAgreementView.getFlowName() == null))
-            {
-                logger.log(Level.FINE, "CreateAdvertDeployPolicy.onChanged: now active");
-
-                String flowName = UUID.randomUUID().toString();
-                String endpoint = createDataFlow(flowName, advertAgreementView);
-
-                if (endpoint != null)
-                {
-                    logger.log(Level.FINE, "CreateAdvertDeployPolicy.onChanged: endpointed");
-
-                    advertAgreementView.setFlowName(flowName);
-                    advertAgreementView.setEndpoint(endpoint);
 
                     serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
                 }

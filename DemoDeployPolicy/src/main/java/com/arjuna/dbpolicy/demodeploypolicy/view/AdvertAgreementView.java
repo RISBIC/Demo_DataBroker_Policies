@@ -13,10 +13,6 @@ public interface AdvertAgreementView
     public void setName(String name);
 
 
-    @Feature(name = "gateway.state", optional=true)
-    public String getState();
-    public void setState(String state);
-
     @Feature(name = "gateway.endpoint", optional=true)
     public String getEndpoint();
     public void setEndpoint(String endpoint);

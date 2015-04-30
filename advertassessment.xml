@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--                                                                                                     -->
+<!-- Copyright (c) 2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
+<!--                                                                                                     -->
+
+<agreementtemplate endpointfieldname="gateway.endpoint">
+    <name>Advert Creation Assessment</name>
+    <purpose>Advert Creation Assessment of data</purpose>
+    <sections>
+        <section headingtext="Advert Info">
+            <fielddetails>
+                <fielddetail name="advert.name" type="text" label="Advert Name" mutable="false" initial="true" required="true"/>
+                <fielddetail name="gateway.endpoint" type="text" label="Upload endpoint" mutable="false" initial="false" required="false"/>
+            </fielddetails>
+        </section>
+    </sections>
+</agreementtemplate>

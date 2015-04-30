@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--                                                                                                     -->
+<!-- Copyright (c) 2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. -->
+<!--                                                                                                     -->
+
+<agreementtemplate statefieldname="gateway.state" endpointfieldname="gateway.endpoint">
+    <name>Privacy Impact Assessment - For Public</name>
+    <purpose>Privacy Impact Assessment of sensitivity of data which is intended to be made public</purpose>
+    <sections>
+        <section headingtext="Section A">
+            <fielddetails>
+                <fielddetail name="sectiona.programinitiative" type="text" label="Program/Initiative"/>
+                <fielddetail name="sectiona.informationassetowner" type="text" label="Information Asset Owner"/>
+                <fielddetail name="sectiona.projectlead" type="text" label="Project Lead"/>
+            </fielddetails>
+        </section>
+
+        <section headingtext="Section B">
+            <fielddetails>
+                <fielddetail name="sectionb.nameaddr" type="radio" label="Contains Names and Addresses?" defaultvalue="false">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.birthdate" type="radio" label="Contains Birth Dates?" defaultvalue="true">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.nis" type="radio" label="Contains National Insurance Numbers?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.bankdetails" type="radio" label="Contains Bank Details?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.healthrecords" type="radio" label="Contains Health Records?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.socialcarerecords" type="radio" label="Contains Bank Records?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.eductionalrecords" type="radio" label="Contains Eductional Records?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.benifitsandcounciltaxrecords" type="radio" label="Contains Benifits and Council Tax Records?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.cctvotherfootage" type="radio" label="Contains CCTV or Other Footage?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.internallyconfidentialmaterial" type="radio" label="Contains Any internally Confidential Material?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionb.contracts" type="radio" label="Contains Contract Information?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+            </fielddetails>
+        </section>
+
+        <section headingtext="Section C">
+            <fielddetails>
+                <fielddetail name="sectionc.changedatahandling" type="radio" label="Does your proposed change result in a change to how information is handled?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionc.changepersonalrecording" type="radio" label="Does your proposed change result in an additioal piese of personal information being recorded?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionc.increaseclassificationrating" type="radio" label="Does your additional information increase the classification rating ad defined in your information asset register (see classification guidance)?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionc.accessadditionalstaff" type="radio" label="Does the proposed change result in access to information being granted to additional staff?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectionc.requiredforpublication" type="radio" label="Is the information required for publication?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+            </fielddetails>
+        </section>
+
+        <section headingtext="Section D">
+            <fielddetails>
+                <fielddetail name="sectiond.aggregateddata" type="radio" label="Is the information aggregated data?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectiond.brokendownbyward" type="radio" label="Is the information broken down by ward level?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectiond.morethan20records" type="radio" label="Does it constitute more than 20 records?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectiond.couldidentifyindividuals" type="radio" label="Could individuals be identified if the information was combined with another data set?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+                <fielddetail name="sectiond.informationunderlicense" type="radio" label="Is the information held or provided under license?">
+                    <optionvalues>
+                        <optionvalue label="No"  value="false"/>
+                        <optionvalue label="Yes" value="true"/>
+                    </optionvalues>
+                </fielddetail>
+            </fielddetails>
+        </section>
+
+        <section headingtext="Data Service Info">
+            <fielddetails>
+                <fielddetail name="change.details" type="textarea" label="Details of Change"/>
+                <fielddetail name="change.date" type="date" label="Change Date"/>
+                <fielddetail name="change.assetowner" type="text" label="Asset Owner"/>
+                <fielddetail name="gateway.state" type="text" label="Agreement State" mutable="false" initial="false" required="false"/>
+                <fielddetail name="gateway.endpoint" type="text" label="Upload endpoint" mutable="false" initial="false" required="false"/>
+            </fielddetails>
+        </section>
+    </sections>
+</agreementtemplate>

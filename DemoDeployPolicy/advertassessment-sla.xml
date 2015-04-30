@@ -8,7 +8,6 @@
     <features>
         <feature name="advert.name"  type="simple:string" shared="true"/>
 
-        <feature name="gateway.state"    type="simple:string" shared="true" optional="true"/>
         <feature name="gateway.endpoint" type="simple:string" shared="true" optional="true"/>
 
         <feature name="advert.flowname" type="simple:string" shared="false" optional="true"/>

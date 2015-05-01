@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<import xmlns="urn:arjuna:agility-portal:service-agreement-import:1.4">
+    <serviceAgreement id="baae0120-eb9c-4c37-8879-35a2b517cdb7" revision="b6996fce-c81f-4214-b9aa-5c8162cc7e4b" version="1">
+        <features>
+            <feature name="agility.relationship.consumer" shared="true">
+                <simpleValue>
+                    <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">127.7.80.129:8080/default</value>
+                </simpleValue>
+            </feature>
+            <feature name="agility.relationship.identity" shared="false">
+                <simpleValue>
+                    <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">consumer</value>
+                </simpleValue>
+            </feature>
+            <feature name="agility.relationship.provider" shared="true">
+                <simpleValue>
+                    <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">127.7.80.129:8080/datamanager</value>
+                </simpleValue>
+            </feature>
+            <feature name="alias" shared="true">
+                <simpleValue>
+                    <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">Data Service Relationship</value>
+                </simpleValue>
+            </feature>
+        </features>
+    </serviceAgreement>
+</import>

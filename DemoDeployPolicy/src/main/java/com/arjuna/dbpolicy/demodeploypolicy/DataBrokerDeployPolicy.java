@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved. 
+ * Copyright (c) 2014-2015, Arjuna Technologies Limited, Newcastle-upon-Tyne, England. All rights reserved.
  */
 
 package com.arjuna.dbpolicy.demodeploypolicy;
@@ -82,7 +82,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: now active");
 
                 String flowName = UUID.randomUUID().toString();
-                String endpoint = createDataFlow(flowName, privacyImpactAssessmentView);
+                String endpoint = createDataFlow(flowName, "ckanapi.properties", privacyImpactAssessmentView);
 
                 if (endpoint != null)
                 {
@@ -112,7 +112,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: now active");
 
                 String flowName = UUID.randomUUID().toString();
-                String endpoint = createDataFlow(flowName, privacyImpactAssessmentView);
+                String endpoint = createDataFlow(flowName, "ckanapi.properties", privacyImpactAssessmentView);
 
                 if (endpoint != null)
                 {
@@ -169,7 +169,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
         logger.log(Level.FINE, "DataBrokerDeployPolicy.onUnregistered");
     }
 
-    private String createDataFlow(String flowName, PrivacyImpactAssessmentView privacyImpactAssessmentView)
+    private String createDataFlow(String flowName, String ckanAPIPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
     {
         logger.log(Level.FINE, "DataBrokerDeployPolicy.createDataFlow: " + flowName);
 
@@ -182,22 +182,24 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
             DataFlow            dataFlow                                     = _dataFlowLifeCycleControl.createDataFlow(flowName, metaProperties, properties);
             DataFlowNodeFactory binaryServiceDataSourceFactory               = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("BinaryService Data Flow Node Factories");
             DataFlowNodeFactory spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Spreadsheet Metadata Extractor Processor Factory");
-            DataFlowNodeFactory directoryUpdateDataServiceFactory            = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Directory Update Data Service Factory");
+            DataFlowNodeFactory ckanFileStoreDataServiceFactory              = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("File Store CKAN Data Flow Node Factories");
 
-            if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null) && (directoryUpdateDataServiceFactory != null))
+            if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null) && (ckanFileStoreDataServiceFactory != null))
             {
+                CKANAPIProperties ckanAPIProperties = new CKANAPIProperties(ckanAPIPropertiesFilename);
+
                 String endpointId = UUID.randomUUID().toString();
                 Map<String, String> dataSourceProperties = new HashMap<String, String>();
                 dataSourceProperties.put("Endpoint Path", endpointId);
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
                 dataProcessorProperties.put("Metadata Blog ID", UUID.randomUUID().toString());
                 Map<String, String> dataServiceProperties = new HashMap<String, String>();
-                dataServiceProperties.put("Directory Name", "/tmp");
-                dataServiceProperties.put("File Name Prefix", "Spreadsheet-");
-                dataServiceProperties.put("File Name Postfix", ".xslx");
+                dataServiceProperties.put("CKAN Root URL", ckanAPIProperties.getCKANRootURL());
+                dataServiceProperties.put("Package Id", ckanAPIProperties.getPackageId());
+                dataServiceProperties.put("API Key", ckanAPIProperties.getAPIKey());
                 DataSource    dataSource    = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, binaryServiceDataSourceFactory, "Endpoint Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
                 DataProcessor dataProcessor = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, spreadsheetMetadataExtractorProcessorFactory, "Metadata Extractor Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
-                DataService   dataService   = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, directoryUpdateDataServiceFactory, "Distribution Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);
+                DataService   dataService   = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, ckanFileStoreDataServiceFactory, "Distribution Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);
 
                 if (dataFlow == null)
                     logger.log(Level.WARNING, "dataFlow is null");

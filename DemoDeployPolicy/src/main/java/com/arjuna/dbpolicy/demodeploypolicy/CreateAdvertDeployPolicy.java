@@ -176,12 +176,34 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataSource, dataProcessor, dataFlow);
 
 //                String hostname = "publisherportal-arjunatech.rhcloud.com";
+//                String hostname = "nccdatamine-testarjuna.rhcloud.com";
                 String hostname = System.getProperty("jboss.bind.address");
 
                 return "http://" + hostname + "/binaryservice/ws/endpoints/" + endpointId;
             }
             else
                 logger.log(Level.WARNING, "Unable to find both DataFlowNode Factory");
+        }
+        catch (Throwable throwable)
+        {
+            logger.log(Level.WARNING, "Problem when creating DataFlow", throwable);
+        }
+
+        return null;
+    }
+
+    private String destroyDataFlow(String flowName)
+    {
+        logger.log(Level.FINE, "DataBrokerDeployPolicy.destroyDataFlow: " + flowName);
+
+        try
+        {
+            DataFlow dataflow = null;
+
+            if (dataflow != null)
+                _dataFlowLifeCycleControl.removeDataFlow(dataflow);
+            else
+                logger.log(Level.WARNING, "Unable to find both DataFlow");
         }
         catch (Throwable throwable)
         {

@@ -216,6 +216,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataProcessor, dataService, dataFlow);
 
 //                String hostname = "publisherportal-arjunatech.rhcloud.com";
+//                String hostname = "nccdatamine-testarjuna.rhcloud.com";
                 String hostname = System.getProperty("jboss.bind.address");
 
                 return "http://" + hostname + "/binaryservice/ws/endpoints/" + endpointId;

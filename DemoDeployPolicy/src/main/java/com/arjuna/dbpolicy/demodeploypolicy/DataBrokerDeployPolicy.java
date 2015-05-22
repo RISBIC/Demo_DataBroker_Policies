@@ -181,7 +181,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
 
             DataFlow            dataFlow                                     = _dataFlowLifeCycleControl.createDataFlow(flowName, metaProperties, properties);
             DataFlowNodeFactory binaryServiceDataSourceFactory               = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("BinaryService Data Flow Node Factories");
-            DataFlowNodeFactory spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Spreadsheet Metadata Extractor Processor Factory");
+            DataFlowNodeFactory spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Extra Spreadsheet Metadata Extractor Processor Factory");
             DataFlowNodeFactory ckanFileStoreDataServiceFactory              = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("File Store CKAN Data Flow Node Factories");
 
             if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null) && (ckanFileStoreDataServiceFactory != null))
@@ -193,6 +193,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 dataSourceProperties.put("Endpoint Path", endpointId);
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
                 dataProcessorProperties.put("Metadata Blog ID", UUID.randomUUID().toString());
+                dataProcessorProperties.put("Location", "http://www.example.org/data");
                 Map<String, String> dataServiceProperties = new HashMap<String, String>();
                 dataServiceProperties.put("CKAN Root URL", ckanAPIProperties.getCKANRootURL());
                 dataServiceProperties.put("Package Id", ckanAPIProperties.getPackageId());

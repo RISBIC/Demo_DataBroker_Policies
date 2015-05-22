@@ -17,8 +17,9 @@ public class CKANAPIProperties
 
         try
         {
-            File       ckanAPIConfigFile       = new File(System.getProperty("jboss.server.config.dir"), ckanAPIPropertiesFilename);
-            FileReader ckanAPIConfigFileReader = new FileReader(ckanAPIPropertiesFilename);
+            File       ckanAPIConfigDir        = new File(System.getProperty("jboss.server.config.dir"));
+            File       ckanAPIConfigFile       = new File(ckanAPIConfigDir, ckanAPIPropertiesFilename);
+            FileReader ckanAPIConfigFileReader = new FileReader(ckanAPIConfigFile);
             _ckanAPIProperties.load(ckanAPIConfigFileReader);
             ckanAPIConfigFileReader.close();
             _loaded = true;
@@ -27,6 +28,7 @@ public class CKANAPIProperties
         {
             _ckanAPIProperties = null;
             _loaded = false;
+            throw new InternalError("Failed to load property: \"" + ckanAPIPropertiesFilename + "\"");
         }
     }
 

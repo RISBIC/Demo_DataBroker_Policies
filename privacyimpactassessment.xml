@@ -8,7 +8,7 @@
     <name>Privacy Impact Assessment - For Public</name>
     <purpose>Privacy Impact Assessment of sensitivity of data which is intended to be made public</purpose>
     <sections>
-        <section headingtext="Section A">
+        <section title="Section A">
             <fielddetails>
                 <fielddetail name="sectiona.programinitiative" type="text" label="Program/Initiative"/>
                 <fielddetail name="sectiona.informationassetowner" type="text" label="Information Asset Owner"/>
@@ -16,7 +16,7 @@
             </fielddetails>
         </section>
 
-        <section headingtext="Section B">
+        <section title="Section B">
             <fielddetails>
                 <fielddetail name="sectionb.nameaddr" type="radio" label="Contains Names and Addresses?" defaultvalue="false">
                     <optionvalues>
@@ -87,7 +87,7 @@
             </fielddetails>
         </section>
 
-        <section headingtext="Section C">
+        <section title="Section C">
             <fielddetails>
                 <fielddetail name="sectionc.changedatahandling" type="radio" label="Does your proposed change result in a change to how information is handled?">
                     <optionvalues>
@@ -122,7 +122,7 @@
             </fielddetails>
         </section>
 
-        <section headingtext="Section D">
+        <section title="Section D">
             <fielddetails>
                 <fielddetail name="sectiond.aggregateddata" type="radio" label="Is the information aggregated data?">
                     <optionvalues>
@@ -157,7 +157,7 @@
             </fielddetails>
         </section>
 
-        <section headingtext="Data Service Info">
+        <section title="Data Service Info">
             <fielddetails>
                 <fielddetail name="change.details" type="textarea" label="Details of Change"/>
                 <fielddetail name="change.date" type="date" label="Change Date"/>

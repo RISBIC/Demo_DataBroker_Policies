@@ -8,7 +8,7 @@
     <name>Advert Creation Assessment</name>
     <purpose>Advert Creation Assessment of data</purpose>
     <sections>
-        <section headingtext="Advert Info">
+        <section title="Advert Info">
             <fielddetails>
                 <fielddetail name="advert.name" type="text" label="Advert Name" mutable="false" initial="true" required="true"/>
                 <fielddetail name="gateway.endpoint" type="text" label="Upload endpoint" mutable="false" initial="false" required="false"/>

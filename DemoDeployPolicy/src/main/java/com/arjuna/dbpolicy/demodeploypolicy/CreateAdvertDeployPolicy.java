@@ -76,7 +76,7 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
                 logger.log(Level.FINE, "CreateAdvertDeployPolicy.onChanged: now active");
 
                 String flowName = UUID.randomUUID().toString();
-                String endpoint = createDataFlow(flowName, advertAgreementView);
+                String endpoint = createDataFlow(flowName, "endpoint.properties", advertAgreementView);
 
                 if (endpoint != null)
                 {
@@ -133,7 +133,7 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
         logger.log(Level.FINE, "DataBrokerDeployPolicy.onUnregistered");
     }
 
-    private String createDataFlow(String flowName, AdvertAgreementView advertAgreementView)
+    private String createDataFlow(String flowName, String endpointPropertiesFilename, AdvertAgreementView advertAgreementView)
     {
         logger.log(Level.FINE, "DataBrokerDeployPolicy.createDataFlow: " + flowName);
 
@@ -157,6 +157,8 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
 
             if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null))
             {
+                EndpointProperties endpointProperties = new EndpointProperties(endpointPropertiesFilename);
+
                 String endpointId = UUID.randomUUID().toString();
                 Map<String, String> dataSourceProperties = new HashMap<String, String>();
                 dataSourceProperties.put("Endpoint Path", endpointId);
@@ -175,11 +177,10 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
 
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataSource, dataProcessor, dataFlow);
 
-//                String hostname = "publisherportal-arjunatech.rhcloud.com";
-//                String hostname = "nccdatamine-testarjuna.rhcloud.com";
+
                 String hostname = System.getProperty("jboss.bind.address");
 
-                return "http://" + hostname + "/binaryservice/ws/endpoints/" + endpointId;
+                return "http://" + endpointProperties.getEndpointRootURL() + "/binaryservice/ws/endpoints/" + endpointId;
             }
             else
                 logger.log(Level.WARNING, "Unable to find both DataFlowNode Factory");

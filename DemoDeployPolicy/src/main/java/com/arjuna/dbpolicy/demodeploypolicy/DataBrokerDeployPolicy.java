@@ -82,7 +82,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: now active");
 
                 String flowName = UUID.randomUUID().toString();
-                String endpoint = createDataFlow(flowName, "ckanapi.properties", privacyImpactAssessmentView);
+                String endpoint = createDataFlow(flowName, "ckanapi.properties", "endpoint.properties", privacyImpactAssessmentView);
 
                 if (endpoint != null)
                 {
@@ -112,7 +112,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: now active");
 
                 String flowName = UUID.randomUUID().toString();
-                String endpoint = createDataFlow(flowName, "ckanapi.properties", privacyImpactAssessmentView);
+                String endpoint = createDataFlow(flowName, "ckanapi.properties", "endpoint.properties", privacyImpactAssessmentView);
 
                 if (endpoint != null)
                 {
@@ -169,7 +169,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
         logger.log(Level.FINE, "DataBrokerDeployPolicy.onUnregistered");
     }
 
-    private String createDataFlow(String flowName, String ckanAPIPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
+    private String createDataFlow(String flowName, String ckanAPIPropertiesFilename, String endpointPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
     {
         logger.log(Level.FINE, "DataBrokerDeployPolicy.createDataFlow: " + flowName);
 
@@ -186,7 +186,8 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
 
             if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null) && (ckanFileStoreDataServiceFactory != null))
             {
-                CKANAPIProperties ckanAPIProperties = new CKANAPIProperties(ckanAPIPropertiesFilename);
+                CKANAPIProperties  ckanAPIProperties =  new CKANAPIProperties(ckanAPIPropertiesFilename);
+                EndpointProperties endpointProperties = new EndpointProperties(endpointPropertiesFilename);
 
                 String endpointId = UUID.randomUUID().toString();
                 Map<String, String> dataSourceProperties = new HashMap<String, String>();
@@ -218,11 +219,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataSource, dataProcessor, dataFlow);
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataProcessor, dataService, dataFlow);
 
-//                String hostname = "publisherportal-arjunatech.rhcloud.com";
-//                String hostname = "nccdatamine-testarjuna.rhcloud.com";
-                String hostname = System.getProperty("jboss.bind.address");
-
-                return "http://" + hostname + "/binaryservice/ws/endpoints/" + endpointId;
+                return "http://" + endpointProperties.getEndpointRootURL() + "/binaryservice/ws/endpoints/" + endpointId;
             }
             else
                 logger.log(Level.WARNING, "Unable to find both DataFlowNode Factory");

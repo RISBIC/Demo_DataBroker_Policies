@@ -177,10 +177,7 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
 
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataSource, dataProcessor, dataFlow);
 
-
-                String hostname = System.getProperty("jboss.bind.address");
-
-                return "http://" + endpointProperties.getEndpointRootURL() + "/binaryservice/ws/endpoints/" + endpointId;
+                return "http://" + endpointProperties.getHostname() + "/binaryservice/ws/endpoints/" + endpointId;
             }
             else
                 logger.log(Level.WARNING, "Unable to find both DataFlowNode Factory");

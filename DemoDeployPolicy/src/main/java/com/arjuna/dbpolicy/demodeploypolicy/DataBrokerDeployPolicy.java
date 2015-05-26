@@ -219,7 +219,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataSource, dataProcessor, dataFlow);
                 _dataFlowNodeLinkLifeCycleControl.createDataFlowNodeLink(dataProcessor, dataService, dataFlow);
 
-                return "http://" + endpointProperties.getEndpointRootURL() + "/binaryservice/ws/endpoints/" + endpointId;
+                return "http://" + endpointProperties.getHostname() + "/binaryservice/ws/endpoints/" + endpointId;
             }
             else
                 logger.log(Level.WARNING, "Unable to find both DataFlowNode Factory");

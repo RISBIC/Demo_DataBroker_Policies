@@ -37,19 +37,19 @@ public class EndpointProperties
         return _loaded;
     }
 
-    public String getEndpointRootURL()
+    public String getHostname()
     {
         if (_endpointProperties != null)
         {
-            String endpointRootURL = _endpointProperties.getProperty("endpointrooturl");
+            String hostname = _endpointProperties.getProperty("endpoint.hostname");
 
-            if (endpointRootURL != null)
-                return endpointRootURL;
+            if (hostname != null)
+                return hostname;
             else
-                throw new InternalError("Failed to obtain \"endpointrooturl\" property");
+                throw new InternalError("Failed to obtain \"endpoint.hostname\" property");
         }
         else
-            throw new InternalError("Failed to obtain \"endpointrooturl\" property, no property file");
+            throw new InternalError("Failed to obtain \"endpoint.hostname\" property, no property file");
     }
 
     private boolean    _loaded;

@@ -46,7 +46,7 @@ public class FormCheckerPolicy implements ServiceAgreementListener
 
             logger.log(Level.FINE, "  onChanged: State: " + state);
 
-            if ((state == null) || (! "active".equals(state)))
+            if ((state == null) || "unchecked".equals(state))
             {
                 logger.log(Level.FINE, "FormCheckerPolicy.onChanged: now active?");
 
@@ -76,7 +76,7 @@ public class FormCheckerPolicy implements ServiceAgreementListener
                 {
                     logger.log(Level.FINE, "FormCheckerPolicy.onChanged: acceptable");
 
-                    privacyImpactAssessmentView.setState("active");
+                    privacyImpactAssessmentView.setState("checked");
 
                     serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
                 }

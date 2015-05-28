@@ -194,7 +194,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 dataSourceProperties.put("Endpoint Path", endpointId);
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
                 dataProcessorProperties.put("Metadata Blog ID", UUID.randomUUID().toString());
-                dataProcessorProperties.put("Location", "http://www.example.org/data");
+                dataProcessorProperties.put("Location", ckanAPIProperties.getCKANRootURL() + "/dataset/" + ckanAPIProperties.getPackageId());
                 Map<String, String> dataServiceProperties = new HashMap<String, String>();
                 dataServiceProperties.put("CKAN Root URL", ckanAPIProperties.getCKANRootURL());
                 dataServiceProperties.put("Package Id", ckanAPIProperties.getPackageId());

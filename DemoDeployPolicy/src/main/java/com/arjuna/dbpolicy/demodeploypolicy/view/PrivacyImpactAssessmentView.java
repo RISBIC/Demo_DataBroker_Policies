@@ -125,10 +125,13 @@ public interface PrivacyImpactAssessmentView
     public String getState();
     public void setState(String state);
 
+    @Feature(name = "gateway.dkanhostname", optional=true)
+    public String getDKANHostname();
+    public void setDKANHostname(String dkanHostname);
+
     @Feature(name = "gateway.endpoint", optional=true)
     public String getEndpoint();
     public void setEndpoint(String endpoint);
-
 
     @Feature(name = "databroker.flowname", optional=true)
     public String getFlowName();

@@ -4,27 +4,17 @@
 
 package com.arjuna.dbpolicy.demodeploypolicy;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.risbic.databroker.openshift.v2.DKANApplication;
+import org.risbic.databroker.openshift.v2.PHPApplication;
 import com.arjuna.agility.ServiceAgreement;
 import com.arjuna.agility.ServiceAgreementContext;
 import com.arjuna.agility.ServiceAgreementListener;
 import com.arjuna.agility.ServiceAgreementListenerException;
 import com.arjuna.agility.Vote;
-import com.arjuna.databroker.data.DataFlow;
-import com.arjuna.databroker.data.DataFlowNodeFactory;
-import com.arjuna.databroker.data.DataProcessor;
-import com.arjuna.databroker.data.DataService;
-import com.arjuna.databroker.data.DataSource;
-import com.arjuna.databroker.data.core.DataFlowLifeCycleControl;
-import com.arjuna.databroker.data.core.DataFlowNodeLifeCycleControl;
-import com.arjuna.databroker.data.core.DataFlowNodeLinkLifeCycleControl;
 import com.arjuna.dbpolicy.demodeploypolicy.view.PrivacyImpactAssessmentView;
 
 @Stateless
@@ -77,19 +67,18 @@ public class DKANDeployPolicy implements ServiceAgreementListener
 
             String state = privacyImpactAssessmentView.getState();
 
-            if ((state != null) && "checked".equals(state) && (privacyImpactAssessmentView.getDKANHostname() == null))
+            if ((state != null) && "checked".equals(state) && (privacyImpactAssessmentView.getServiceRootURL() == null))
             {
-                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: now ckecked");
+                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: now dkan deployed");
 
-                String flowName = UUID.randomUUID().toString();
-                String endpoint = createDKAN(flowName, "ckanapi.properties", "endpoint.properties", privacyImpactAssessmentView);
+                String serviceRootURL = createDKAN("openshift.properties", privacyImpactAssessmentView);
 
-                if (endpoint != null)
+                if (serviceRootURL != null)
                 {
-                    logger.log(Level.FINE, "DKANDeployPolicy.onChanged: endpointed");
+                    logger.log(Level.FINE, "DKANDeployPolicy.onChanged: dkanHostname");
 
-                    privacyImpactAssessmentView.setEndpoint(endpoint);
-                    privacyImpactAssessmentView.setFlowName(flowName);
+                    privacyImpactAssessmentView.setState("deployed");
+                    privacyImpactAssessmentView.setServiceRootURL(serviceRootURL);
 
                     serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
                 }
@@ -107,19 +96,18 @@ public class DKANDeployPolicy implements ServiceAgreementListener
             String previousState = previousPrivacyImpactAssessmentView.getState();
             String state         = privacyImpactAssessmentView.getState();
 
-            if (((previousState == null) || (! "active".equals(previousState))) && (state != null) && "active".equals(state) && (privacyImpactAssessmentView.getFlowName() == null))
+            if (((previousState == null) || (! "checked".equals(previousState))) && (state != null) && "checked".equals(state) && (privacyImpactAssessmentView.getServiceRootURL() == null))
             {
-                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: now active");
+                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: now checked");
 
-                String flowName = UUID.randomUUID().toString();
-                String endpoint = createDKAN(flowName, "ckanapi.properties", "endpoint.properties", privacyImpactAssessmentView);
+                String serviceRootURL = createDKAN("openshift.properties", privacyImpactAssessmentView);
 
-                if (endpoint != null)
+                if (serviceRootURL != null)
                 {
-                    logger.log(Level.FINE, "DKANDeployPolicy.onChanged: endpointed");
+                    logger.log(Level.FINE, "DKANDeployPolicy.onChanged: serviceRootURL");
 
-                    privacyImpactAssessmentView.setFlowName(flowName);
-                    privacyImpactAssessmentView.setEndpoint(endpoint);
+                    privacyImpactAssessmentView.setState("deployed");
+                    privacyImpactAssessmentView.setServiceRootURL(serviceRootURL);
 
                     serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
                 }
@@ -169,12 +157,40 @@ public class DKANDeployPolicy implements ServiceAgreementListener
         logger.log(Level.FINE, "DKANDeployPolicy.onUnregistered");
     }
 
-    private String createDKAN(String flowName, String ckanAPIPropertiesFilename, String endpointPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
+    private static final String RISBIC_DKAN_REPO = "git@github.com:RISBIC/dkan-openshift";
+
+    private String generateAppName()
     {
-        logger.log(Level.FINE, "DKANDeployPolicy.createDKAN: " + flowName);
+       return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private String createDKAN(String openshiftPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
+    {
+        logger.log(Level.FINE, "DKANDeployPolicy.createDKAN");
 
         try
         {
+            logger.log(Level.WARNING, "DKANDeployPolicy.createDKAN: body");
+
+            OpenShiftProperties openshiftProperties = new OpenShiftProperties(openshiftPropertiesFilename);
+
+            PHPApplication dkan = new DKANApplication(openshiftProperties.getUsername(), openshiftProperties.getPassword(), openshiftProperties.getDomain(), generateAppName(), RISBIC_DKAN_REPO);
+
+            try
+            {
+                logger.log(Level.FINE, "DKANDeployPolicy.createDKAN: start deploy");
+                
+                dkan.deploy();
+                dkan.start();
+
+                logger.log(Level.FINE, "DKANDeployPolicy.createDKAN: end deploy");
+
+                return dkan.getUrl();
+            }
+            catch (Throwable throwable)
+            {
+                logger.log(Level.FINE, "DKANDeployPolicy.createDKAN: deploy failed", throwable);
+            }
         }
         catch (Throwable throwable)
         {

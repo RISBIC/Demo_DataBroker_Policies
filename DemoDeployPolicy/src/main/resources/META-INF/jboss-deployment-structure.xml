@@ -13,6 +13,7 @@
             <module name="deployment.databroker.ear.data-common-jee.jar"/>
             <module name="deployment.databroker.ear.data-core.jar"/>
             <module name="deployment.databroker.ear.data-core-jee.jar"/>
+            <module name="deployment.databroker.ear.openshift.jar"/>
         </dependencies>
     </deployment>
 </jboss-deployment-structure>

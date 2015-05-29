@@ -74,6 +74,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.arjuna.databroker</groupId>
+            <artifactId>openshift</artifactId>
+            <version>${version.com.arjuna.databroker}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.arjuna</groupId>
             <artifactId>agility-api</artifactId>
             <version>${version.agility}</version>

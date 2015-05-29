@@ -77,9 +77,9 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
 
             String state = privacyImpactAssessmentView.getState();
 
-            if ((state != null) && "active".equals(state) && (privacyImpactAssessmentView.getFlowName() == null))
+            if ((state != null) && "deployed".equals(state) && (privacyImpactAssessmentView.getFlowName() == null))
             {
-                logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: now active");
+                logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: now deployed");
 
                 String flowName = UUID.randomUUID().toString();
                 String endpoint = createDataFlow(flowName, "ckanapi.properties", "endpoint.properties", privacyImpactAssessmentView);
@@ -88,6 +88,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 {
                     logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: endpointed");
 
+                    privacyImpactAssessmentView.setState("active");
                     privacyImpactAssessmentView.setEndpoint(endpoint);
                     privacyImpactAssessmentView.setFlowName(flowName);
 
@@ -107,17 +108,18 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
             String previousState = previousPrivacyImpactAssessmentView.getState();
             String state         = privacyImpactAssessmentView.getState();
 
-            if (((previousState == null) || (! "active".equals(previousState))) && (state != null) && "active".equals(state) && (privacyImpactAssessmentView.getFlowName() == null))
+            if (((previousState == null) || (! "deployed".equals(previousState))) && (state != null) && "deployed".equals(state) && (privacyImpactAssessmentView.getFlowName() == null))
             {
                 logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: now active");
 
                 String flowName = UUID.randomUUID().toString();
-                String endpoint = createDataFlow(flowName, "ckanapi.properties", "endpoint.properties", privacyImpactAssessmentView);
+                String endpoint = createDataFlow(flowName, "dkanapi.properties", "endpoint.properties", privacyImpactAssessmentView);
 
                 if (endpoint != null)
                 {
                     logger.log(Level.FINE, "DataBrokerDeployPolicy.onChanged: endpointed");
 
+                    privacyImpactAssessmentView.setState("active");
                     privacyImpactAssessmentView.setFlowName(flowName);
                     privacyImpactAssessmentView.setEndpoint(endpoint);
 
@@ -169,7 +171,7 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
         logger.log(Level.FINE, "DataBrokerDeployPolicy.onUnregistered");
     }
 
-    private String createDataFlow(String flowName, String ckanAPIPropertiesFilename, String endpointPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
+    private String createDataFlow(String flowName, String dkanAPIPropertiesFilename, String endpointPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
     {
         logger.log(Level.FINE, "DataBrokerDeployPolicy.createDataFlow: " + flowName);
 
@@ -182,11 +184,11 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
             DataFlow            dataFlow                                     = _dataFlowLifeCycleControl.createDataFlow(flowName, metaProperties, properties);
             DataFlowNodeFactory binaryServiceDataSourceFactory               = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("BinaryService Data Flow Node Factories");
             DataFlowNodeFactory spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Extra Spreadsheet Metadata Extractor Processor Factory");
-            DataFlowNodeFactory ckanFileStoreDataServiceFactory              = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("File Store CKAN Data Flow Node Factories");
+            DataFlowNodeFactory ckanFileStoreDataServiceFactory              = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("File Store DKAN Data Flow Node Factories");
 
             if ((binaryServiceDataSourceFactory != null) && (spreadsheetMetadataExtractorProcessorFactory != null) && (ckanFileStoreDataServiceFactory != null))
             {
-                CKANAPIProperties  ckanAPIProperties =  new CKANAPIProperties(ckanAPIPropertiesFilename);
+                DKANAPIProperties  dkanAPIProperties =  new DKANAPIProperties(dkanAPIPropertiesFilename);
                 EndpointProperties endpointProperties = new EndpointProperties(endpointPropertiesFilename);
 
                 String endpointId = UUID.randomUUID().toString();
@@ -194,11 +196,12 @@ public class DataBrokerDeployPolicy implements ServiceAgreementListener
                 dataSourceProperties.put("Endpoint Path", endpointId);
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
                 dataProcessorProperties.put("Metadata Blog ID", UUID.randomUUID().toString());
-                dataProcessorProperties.put("Location", "http://www.example.org/data");
+                dataProcessorProperties.put("Location", privacyImpactAssessmentView.getServiceRootURL() + "/dataset/" + dkanAPIProperties.getPackageId());
                 Map<String, String> dataServiceProperties = new HashMap<String, String>();
-                dataServiceProperties.put("CKAN Root URL", ckanAPIProperties.getCKANRootURL());
-                dataServiceProperties.put("Package Id", ckanAPIProperties.getPackageId());
-                dataServiceProperties.put("API Key", ckanAPIProperties.getAPIKey());
+                dataServiceProperties.put("DKAN Root URL", privacyImpactAssessmentView.getServiceRootURL());
+                dataServiceProperties.put("Package Id", dkanAPIProperties.getPackageId());
+                dataServiceProperties.put("Username", dkanAPIProperties.getUsername());
+                dataServiceProperties.put("Password", dkanAPIProperties.getPassword());
                 DataSource    dataSource    = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, binaryServiceDataSourceFactory, "Endpoint Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
                 DataProcessor dataProcessor = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, spreadsheetMetadataExtractorProcessorFactory, "Metadata Extractor Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
                 DataService   dataService   = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, ckanFileStoreDataServiceFactory, "Distribution Service", DataService.class, Collections.<String, String>emptyMap(), dataServiceProperties);

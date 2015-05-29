@@ -125,9 +125,9 @@ public interface PrivacyImpactAssessmentView
     public String getState();
     public void setState(String state);
 
-    @Feature(name = "gateway.dkanhostname", optional=true)
-    public String getDKANHostname();
-    public void setDKANHostname(String dkanHostname);
+    @Feature(name = "gateway.servicerooturl", optional=true)
+    public String getServiceRootURL();
+    public void setServiceRootURL(String serviceRootURL);
 
     @Feature(name = "gateway.endpoint", optional=true)
     public String getEndpoint();

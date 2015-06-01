@@ -85,5 +85,10 @@
             <version>${version.agility}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.openshift</groupId>
+            <artifactId>openshift-java-client</artifactId>
+            <version>2.7.0.Final</version>
+        </dependency>
     </dependencies>
 </project>

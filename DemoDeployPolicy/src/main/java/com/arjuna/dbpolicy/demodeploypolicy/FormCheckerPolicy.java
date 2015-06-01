@@ -30,6 +30,20 @@ public class FormCheckerPolicy implements ServiceAgreementListener
     {
         logger.log(Level.FINE, "FormCheckerPolicy.onChangeProposed");
 
+        if (serviceAgreement.isCompatible(PrivacyImpactAssessmentView.class))
+        {
+            PrivacyImpactAssessmentView privacyImpactAssessmentView = serviceAgreement.asView(PrivacyImpactAssessmentView.class);
+
+            String state = privacyImpactAssessmentView.getState();
+
+            logger.log(Level.FINE, "  onChangeProposed: State: " + state);
+
+            if ((state == null) || check(privacyImpactAssessmentView))
+                return Vote.accept();
+            else
+                return Vote.reject();
+        }
+
         return Vote.ignore();
     }
 
@@ -50,27 +64,7 @@ public class FormCheckerPolicy implements ServiceAgreementListener
             {
                 logger.log(Level.FINE, "FormCheckerPolicy.onChanged: now active?");
 
-                boolean acceptable = "false".equals(privacyImpactAssessmentView.getNameAddr()) &&
-                                     "false".equals(privacyImpactAssessmentView.getBirthDate()) &&
-                                     "false".equals(privacyImpactAssessmentView.getNIS()) &&
-                                     "false".equals(privacyImpactAssessmentView.getBankDetails()) &&
-                                     "false".equals(privacyImpactAssessmentView.getHealthRecords()) &&
-                                     "false".equals(privacyImpactAssessmentView.getSocialCareRecords()) &&
-                                     "false".equals(privacyImpactAssessmentView.getEductionalRecords()) &&
-                                     "false".equals(privacyImpactAssessmentView.getBenifitsAndCouncilTaxRecords()) &&
-                                     "false".equals(privacyImpactAssessmentView.getCCTVOtherFootage()) &&
-                                     "false".equals(privacyImpactAssessmentView.getInternallyConfidentialMaterial()) &&
-                                     "false".equals(privacyImpactAssessmentView.getContracts()) &&
-                                     "false".equals(privacyImpactAssessmentView.getChangeDataHandling()) &&
-                                     "false".equals(privacyImpactAssessmentView.getChangePersonalRecording()) &&
-                                     "false".equals(privacyImpactAssessmentView.getIncreaseClassificationRating()) &&
-                                     "false".equals(privacyImpactAssessmentView.getAccessAdditionalStaff()) &&
-                                     "false".equals(privacyImpactAssessmentView.getRequiredForPublication()) &&
-                                     "false".equals(privacyImpactAssessmentView.getAggregatedData()) &&
-                                     "false".equals(privacyImpactAssessmentView.getBrokenDownByWard()) &&
-                                     "false".equals(privacyImpactAssessmentView.getMoreThan20Records()) &&
-                                     "false".equals(privacyImpactAssessmentView.getCouldIdentifyIndividuals()) &&
-                                     "false".equals(privacyImpactAssessmentView.getInformationUnderLicense());
+                boolean acceptable = check(privacyImpactAssessmentView);
 
                 if (acceptable)
                 {
@@ -116,5 +110,32 @@ public class FormCheckerPolicy implements ServiceAgreementListener
          throws ServiceAgreementListenerException
     {
         logger.log(Level.FINE, "FormCheckerPolicy.onUnregistered");
+    }
+
+    public boolean check(PrivacyImpactAssessmentView privacyImpactAssessmentView)
+    {
+        logger.log(Level.FINE, "FormCheckerPolicy.check");
+
+        return "false".equals(privacyImpactAssessmentView.getNameAddr()) &&
+               "false".equals(privacyImpactAssessmentView.getBirthDate()) &&
+               "false".equals(privacyImpactAssessmentView.getNIS()) &&
+               "false".equals(privacyImpactAssessmentView.getBankDetails()) &&
+               "false".equals(privacyImpactAssessmentView.getHealthRecords()) &&
+               "false".equals(privacyImpactAssessmentView.getSocialCareRecords()) &&
+               "false".equals(privacyImpactAssessmentView.getEductionalRecords()) &&
+               "false".equals(privacyImpactAssessmentView.getBenifitsAndCouncilTaxRecords()) &&
+               "false".equals(privacyImpactAssessmentView.getCCTVOtherFootage()) &&
+               "false".equals(privacyImpactAssessmentView.getInternallyConfidentialMaterial()) &&
+               "false".equals(privacyImpactAssessmentView.getContracts()) &&
+               "false".equals(privacyImpactAssessmentView.getChangeDataHandling()) &&
+               "false".equals(privacyImpactAssessmentView.getChangePersonalRecording()) &&
+               "false".equals(privacyImpactAssessmentView.getIncreaseClassificationRating()) &&
+               "false".equals(privacyImpactAssessmentView.getAccessAdditionalStaff()) &&
+               "false".equals(privacyImpactAssessmentView.getRequiredForPublication()) &&
+               "false".equals(privacyImpactAssessmentView.getAggregatedData()) &&
+               "false".equals(privacyImpactAssessmentView.getBrokenDownByWard()) &&
+               "false".equals(privacyImpactAssessmentView.getMoreThan20Records()) &&
+               "false".equals(privacyImpactAssessmentView.getCouldIdentifyIndividuals()) &&
+               "false".equals(privacyImpactAssessmentView.getInformationUnderLicense());
     }
 }

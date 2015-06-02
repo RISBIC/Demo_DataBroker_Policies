@@ -69,19 +69,12 @@ public class DKANDeployPolicy implements ServiceAgreementListener
 
             if ((state != null) && "checked".equals(state) && (privacyImpactAssessmentView.getServiceRootURL() == null))
             {
-                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: now dkan deployed");
+                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: try to deploy");
 
-                String serviceRootURL = createDKAN("openshift.properties", privacyImpactAssessmentView);
+                DeployWorker deployWorker = new DeployWorker(privacyImpactAssessmentView, serviceAgreement, serviceAgreementContext);
+                deployWorker.start();
 
-                if (serviceRootURL != null)
-                {
-                    logger.log(Level.FINE, "DKANDeployPolicy.onChanged: dkanHostname");
-
-                    privacyImpactAssessmentView.setState("deployed");
-                    privacyImpactAssessmentView.setServiceRootURL(serviceRootURL);
-
-                    serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
-                }
+                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: finish of deploying");
             }
         }
         else if (serviceAgreement.isCompatible(PrivacyImpactAssessmentView.class) && (previousServiceAgreement != null) && previousServiceAgreement.isCompatible(PrivacyImpactAssessmentView.class))
@@ -98,19 +91,12 @@ public class DKANDeployPolicy implements ServiceAgreementListener
 
             if (((previousState == null) || (! "checked".equals(previousState))) && (state != null) && "checked".equals(state) && (privacyImpactAssessmentView.getServiceRootURL() == null))
             {
-                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: now checked");
+                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: try to deploy");
 
-                String serviceRootURL = createDKAN("openshift.properties", privacyImpactAssessmentView);
+                DeployWorker deployWorker = new DeployWorker(privacyImpactAssessmentView, serviceAgreement, serviceAgreementContext);
+                deployWorker.start();
 
-                if (serviceRootURL != null)
-                {
-                    logger.log(Level.FINE, "DKANDeployPolicy.onChanged: serviceRootURL");
-
-                    privacyImpactAssessmentView.setState("deployed");
-                    privacyImpactAssessmentView.setServiceRootURL(serviceRootURL);
-
-                    serviceAgreementContext.getServiceAgreementManager().propose(serviceAgreement);
-                }
+                logger.log(Level.FINE, "DKANDeployPolicy.onChanged: finish of deploying");
             }
         }
     }
@@ -157,46 +143,81 @@ public class DKANDeployPolicy implements ServiceAgreementListener
         logger.log(Level.FINE, "DKANDeployPolicy.onUnregistered");
     }
 
-    private static final String RISBIC_DKAN_REPO = "git@github.com:RISBIC/dkan-openshift";
-
-    private String generateAppName()
+    private class DeployWorker extends Thread
     {
-       return UUID.randomUUID().toString().replace("-", "");
-    }
+        private static final String RISBIC_DKAN_REPO = "https://github.com/RISBIC/dkan-openshift.git";
 
-    private String createDKAN(String openshiftPropertiesFilename, PrivacyImpactAssessmentView privacyImpactAssessmentView)
-    {
-        logger.log(Level.FINE, "DKANDeployPolicy.createDKAN");
-
-        try
+        public DeployWorker(PrivacyImpactAssessmentView privacyImpactAssessmentView, ServiceAgreement serviceAgreement, ServiceAgreementContext serviceAgreementContext)
         {
-            logger.log(Level.WARNING, "DKANDeployPolicy.createDKAN: body");
+            logger.log(Level.FINE, "DeployWorker: created");
 
-            OpenShiftProperties openshiftProperties = new OpenShiftProperties(openshiftPropertiesFilename);
+            _privacyImpactAssessmentView = privacyImpactAssessmentView;
+            _serviceAgreement            = serviceAgreement;
+            _serviceAgreementContext     = serviceAgreementContext;
+        }
 
-            PHPApplication dkan = new DKANApplication(openshiftProperties.getUsername(), openshiftProperties.getPassword(), openshiftProperties.getDomain(), generateAppName(), RISBIC_DKAN_REPO);
+        public void run()
+        {
+            logger.log(Level.FINE, "DeployWorker: deploy started");
+
+            String serviceRootURL = createDKAN("openshift.properties");
+
+            if (serviceRootURL != null)
+            {
+                logger.log(Level.FINE, "DeployWorker: deploy success");
+
+                _privacyImpactAssessmentView.setState("deployed");
+                _privacyImpactAssessmentView.setServiceRootURL(serviceRootURL);
+
+                _serviceAgreementContext.getServiceAgreementManager().propose(_serviceAgreement);
+            }
+
+            logger.log(Level.FINE, "DeployWorker: deploy ended");
+        }
+
+        private String generateAppName()
+        {
+           return UUID.randomUUID().toString().replace("-", "");
+        }
+
+        private String createDKAN(String openshiftPropertiesFilename)
+        {
+            logger.log(Level.FINE, "DeployWorker.createDKAN");
 
             try
             {
-                logger.log(Level.FINE, "DKANDeployPolicy.createDKAN: start deploy");
-                
-                dkan.deploy();
-                dkan.start();
+                logger.log(Level.WARNING, "DeployWorker.createDKAN: body");
 
-                logger.log(Level.FINE, "DKANDeployPolicy.createDKAN: end deploy");
+                OpenShiftProperties openshiftProperties = new OpenShiftProperties(openshiftPropertiesFilename);
 
-                return dkan.getUrl();
+                PHPApplication dkan = new DKANApplication(openshiftProperties.getUsername(), openshiftProperties.getPassword(), openshiftProperties.getDomain(), generateAppName(), RISBIC_DKAN_REPO);
+
+                try
+                {
+                    logger.log(Level.FINE, "DeployWorker.createDKAN: start deploy");
+
+                    dkan.deploy();
+                    dkan.start();
+
+                    logger.log(Level.FINE, "DeployWorker.createDKAN: end deploy [" + dkan.getUrl() + "]");
+
+                    return dkan.getUrl();
+                }
+                catch (Throwable throwable)
+                {
+                    logger.log(Level.FINE, "DeployWorker.createDKAN: deploy failed", throwable);
+                }
             }
             catch (Throwable throwable)
             {
-                logger.log(Level.FINE, "DKANDeployPolicy.createDKAN: deploy failed", throwable);
+                logger.log(Level.WARNING, "Problem when creating DKAN", throwable);
             }
-        }
-        catch (Throwable throwable)
-        {
-            logger.log(Level.WARNING, "Problem when creating DKAN", throwable);
+
+            return null;
         }
 
-        return null;
+        private PrivacyImpactAssessmentView _privacyImpactAssessmentView;
+        private ServiceAgreement            _serviceAgreement;
+        private ServiceAgreementContext     _serviceAgreementContext;
     }
 }

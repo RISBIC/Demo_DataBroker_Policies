@@ -150,7 +150,7 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
             if (dataFlow != null)
             {
                  binaryServiceDataSourceFactory               = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("BinaryService Data Flow Node Factories");
-                 spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Spreadsheet Metadata Extractor Processor Factory");
+                 spreadsheetMetadataExtractorProcessorFactory = dataFlow.getDataFlowNodeFactoryInventory().getDataFlowNodeFactory("Extra Spreadsheet Metadata Extractor Processor Factory");
             }
             else
                 logger.log(Level.WARNING, "dataFlow is null");
@@ -164,6 +164,7 @@ public class CreateAdvertDeployPolicy implements ServiceAgreementListener
                 dataSourceProperties.put("Endpoint Path", endpointId);
                 Map<String, String> dataProcessorProperties = new HashMap<String, String>();
                 dataProcessorProperties.put("Metadata Blog ID", UUID.randomUUID().toString());
+                dataProcessorProperties.put("Location", "http://www.example.org/dataset/");
                 DataSource    dataSource    = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, binaryServiceDataSourceFactory, "Endpoint Source", DataSource.class, Collections.<String, String>emptyMap(), dataSourceProperties);
                 DataProcessor dataProcessor = _dataFlowNodeLifeCycleControl.createDataFlowNode(dataFlow, spreadsheetMetadataExtractorProcessorFactory, "Metadata Extractor Processor", DataProcessor.class, Collections.<String, String>emptyMap(), dataProcessorProperties);
 

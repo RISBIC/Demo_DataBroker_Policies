@@ -13,12 +13,12 @@
 
     <packaging>jar</packaging>
 
-    <version>1.0.0p1m1l</version>
+    <version>1.0.0p2m1</version>
 
     <name>Demo Deploy Policy</name>
 
     <properties>
-        <version.com.arjuna.databroker>1.0.0p1m3l</version.com.arjuna.databroker>
+        <version.com.arjuna.databroker>1.0.0p2m1</version.com.arjuna.databroker>
         <version.agility>3.0.1-SNAPSHOT</version.agility>
 
         <maven.compiler.source>1.7</maven.compiler.source>
